@@ -218,9 +218,9 @@ int main() {
 
         // Horizontal movement
         if (keyboardState[SDL_SCANCODE_A] || keyboardState[SDL_SCANCODE_LEFT]) {
-            player.accX = -15.0f;  // Move left
+            player.accX += -200.0f;  // Move left
         } else if (keyboardState[SDL_SCANCODE_D] || keyboardState[SDL_SCANCODE_RIGHT]) {
-            player.accX = 15.0f;   // Move right
+            player.accX += 200.0f;   // Move right
         } else {
             player.accX = 0.0f;    // Stop horizontal acceleration
         }
@@ -242,7 +242,7 @@ int main() {
                 }
 
                 float rms = sqrtf(sum / sampleCount);
-                if (rms > 0.5) jumpPlayer(&player);
+                if (rms > 0.3) jumpPlayer(&player);
                 //printf("Volume: %.4f (%d samples)\n", rms, sampleCount);
             }
         }
