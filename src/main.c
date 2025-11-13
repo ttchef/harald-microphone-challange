@@ -34,9 +34,6 @@ static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_
 
     AudioData* data = (AudioData*)userData;
 
-    int32_t dispSize = 100;
-    printf("\r");
-
     float volLeft = 0.0f;
     float volRight = 0.0f;
 
@@ -48,26 +45,9 @@ static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_
     atomic_store(&data->volL, (int32_t)(volLeft * 400));
     atomic_store(&data->volR, (int32_t)(volRight * 400));
 
-    for (int32_t i = 0; i < dispSize; i++) {
-        float barPorportion = i / (float)dispSize;
-        if (barPorportion <= volLeft && barPorportion <= volRight) {
-            
-            printf("█");
-        }
-        else if (barPorportion <= volLeft) {
-            printf("▀");
-        }
-        else if (barPorportion <= volRight) {
-            printf("▄");
-        }
-        else {
-            printf(" ");
-        }
-    }
-
-    fflush(stdout);
     return 0;
 }
+
 
 int main() {
     PaError err = Pa_Initialize();
@@ -123,7 +103,12 @@ int main() {
     err = Pa_StartStream(stream);
     checkErr(err);
 
-    InitWindow(800, 600, "Audio");
+    const int32_t windowWidth = 1200;
+    const int32_t windowHeight = 800;
+    const int32_t gameWidth = 900;
+    const int32_t guiWidth = 300;
+    const int32_t guiOffset = windowWidth - guiWidth;
+    InitWindow(windowWidth, windowHeight, "Audio");
 
     while (!WindowShouldClose()) {
         BeginDrawing();

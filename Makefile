@@ -1,11 +1,17 @@
+
 CC = gcc
-CFLAGS = -g -O0
+
+VENDOR = vendor
+INCLUDE_PATH = -l$(VENDOR)/raygui/src
+
+CFLAGS = -g -O0 $(INCLUDE_PATH)
 LDFLAGS = -lraylib -lm -lportaudio
 
 BUILD_DIR = build
 
-SRC_FILES = $(wildcard *.c)
-OBJ_FILES = $(addprefix $(BUILD_DIR)/, $(SRC_FILES:.c=.o))
+SRC_FILES = $(wildcard src/*.c)
+TEMP_SRC = $(notdir $(SRC_FILES))
+OBJ_FILES = $(addprefix $(BUILD_DIR)/, $(TEMP_SRC:.c=.o))
 
 TARGET = $(BUILD_DIR)/main
 
