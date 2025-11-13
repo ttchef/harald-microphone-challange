@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -O0
-LDFLAGS = -lraylib -lm
+LDFLAGS = -lraylib -lm -lportaudio
 
 BUILD_DIR = build
 
