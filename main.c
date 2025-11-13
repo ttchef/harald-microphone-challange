@@ -11,8 +11,10 @@
 #define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 512
 
-atomic_int lengthL = 5;
-atomic_int lengthR = 5;
+typedef struct AudioData {
+    atomic_int volL;
+    atomic_int volR;
+} AudioData;
 
 static inline void checkErr(PaError err) {
     if (err != paNoError) {
@@ -21,14 +23,16 @@ static inline void checkErr(PaError err) {
     };
 }
 
-static inline float max(float a, float b) {
-    return a < b ? b : a;
-}
-
 static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_t framesPerBuffer,
                             const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData) {
     float* in = (float*)inputBuffer;
+
+    // Unused Parameters
     (void)outputBuffer;
+    (void)timeInfo;
+    (void)statusFlags;
+
+    AudioData* data = (AudioData*)userData;
 
     int32_t dispSize = 100;
     printf("\r");
@@ -37,12 +41,12 @@ static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_
     float volRight = 0.0f;
 
     for (uint64_t i = 0; i < framesPerBuffer * 2; i += 2) {
-        volLeft = max(volLeft, fabs(in[i]));
-        volRight = max(volRight, fabs(in[i + 1]));
+        volLeft = fmaxf(volLeft, fabs(in[i]));
+        volRight = fmaxf(volRight, fabs(in[i + 1]));
     }
 
-    atomic_store(&lengthL, (int32_t)(volLeft * 400));
-    atomic_store(&lengthR, (int32_t)(volRight * 400));
+    atomic_store(&data->volL, (int32_t)(volLeft * 400));
+    atomic_store(&data->volR, (int32_t)(volRight * 400));
 
     for (int32_t i = 0; i < dispSize; i++) {
         float barPorportion = i / (float)dispSize;
@@ -107,8 +111,13 @@ int main() {
         inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency,
     };
 
+    AudioData data = {
+        .volL = 0,
+        .volR = 0,
+    };
+
     PaStream* stream;
-    err = Pa_OpenStream(&stream, &inputParameters, &outputParameters, SAMPLE_RATE, FRAMES_PER_BUFFER, paNoFlag, testCallback, NULL);
+    err = Pa_OpenStream(&stream, &inputParameters, &outputParameters, SAMPLE_RATE, FRAMES_PER_BUFFER, paNoFlag, testCallback, &data);
     checkErr(err);
 
     err = Pa_StartStream(stream);
@@ -119,8 +128,8 @@ int main() {
     while (!WindowShouldClose()) {
         BeginDrawing();
             ClearBackground(BLACK);
-            DrawRectangle(30, 300, atomic_load(&lengthL), 30, RED);
-            DrawRectangle(30, 330, atomic_load(&lengthR), 30, RED);
+            DrawRectangle(30, 300, atomic_load(&data.volL), 30, RED);
+            DrawRectangle(30, 330, atomic_load(&data.volR), 30, RED);
         EndDrawing();
     }
 
