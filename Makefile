@@ -2,7 +2,7 @@
 CC = gcc
 
 VENDOR = vendor
-INCLUDE_PATH = -l$(VENDOR)/raygui/src
+INCLUDE_PATH = -Iinclude -I$(VENDOR)/raygui/src
 
 CFLAGS = -g -O0 $(INCLUDE_PATH)
 LDFLAGS = -lraylib -lm -lportaudio
@@ -20,7 +20,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ_FILES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR):
