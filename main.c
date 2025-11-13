@@ -3,11 +3,16 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <stdatomic.h>
 
+#include <raylib.h>
 #include <portaudio.h>
 
 #define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 512
+
+atomic_int lengthL = 5;
+atomic_int lengthR = 5;
 
 static inline void checkErr(PaError err) {
     if (err != paNoError) {
@@ -36,9 +41,13 @@ static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_
         volRight = max(volRight, fabs(in[i + 1]));
     }
 
+    atomic_store(&lengthL, (int32_t)(volLeft * 400));
+    atomic_store(&lengthR, (int32_t)(volRight * 400));
+
     for (int32_t i = 0; i < dispSize; i++) {
         float barPorportion = i / (float)dispSize;
         if (barPorportion <= volLeft && barPorportion <= volRight) {
+            
             printf("█");
         }
         else if (barPorportion <= volLeft) {
@@ -105,7 +114,17 @@ int main() {
     err = Pa_StartStream(stream);
     checkErr(err);
 
-    Pa_Sleep(10 * 1000);
+    InitWindow(800, 600, "Audio");
+
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+            ClearBackground(BLACK);
+            DrawRectangle(30, 300, atomic_load(&lengthL), 30, RED);
+            DrawRectangle(30, 330, atomic_load(&lengthR), 30, RED);
+        EndDrawing();
+    }
+
+    CloseWindow();
 
     err = Pa_StopStream(stream);
     checkErr(err);
