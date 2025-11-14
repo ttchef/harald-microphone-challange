@@ -30,7 +30,7 @@ Already cloned update all the sumbodules
 git submodule update --init --recursive
 ```
 ```bash 
-make #To build
-make run #To build and run
+make # To build
+make run # To build and run
 ```
 
