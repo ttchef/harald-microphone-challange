@@ -2,6 +2,9 @@
 #include "audio.h"
 #include "context.h"
 #include "renderer.h"
+
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 #include <raylib.h>
 
 int main() {

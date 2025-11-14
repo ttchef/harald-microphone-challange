@@ -3,9 +3,10 @@
 #include "context.h"
 
 #include <math.h>
+#include <stdatomic.h>
 
 #include <raylib.h>
-#include <stdatomic.h>
+#include "raygui.h"
 
 void renderGui(Context* context) {
     DrawRectangle(context->guiOffset, 0, context->guiWidth, context->windowHeight, DARKGRAY);
@@ -15,10 +16,18 @@ void renderGui(Context* context) {
     int32_t startX = context->guiOffset + paddingX;
     int32_t elementWidth = context->guiWidth - 2 * paddingX;
 
+    int32_t buttonHeight = 30;
+    const char* micList = "Default;Fifine Microphone";
+    Rectangle bounds = { .x = startX, .y = currentY, .width = elementWidth, .height = buttonHeight };
+    static int active = 0;
+    static bool editMode = false;
+    currentY += buttonHeight + paddingY;
+
     // Draw Audio Background
     int32_t maxHeight = 500;
     DrawRectangle(startX, currentY, elementWidth, maxHeight, BLACK);
-    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight);
+    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight - paddingY * 2);
+    volume = volume <= 10 ? 0 : volume;
 
     int32_t barX = startX + elementWidth / 4;
     int32_t barW = elementWidth / 2;
@@ -39,7 +48,9 @@ void renderGui(Context* context) {
         DrawRectangle(barX, barYbottom - i, barW, 1, color);
     }
 
-    //DrawRectangle(startX + elementWidth / 4, currentY + maxHeight - paddingY - volume, elementWidth / 2, volume, RED);
     currentY += maxHeight + paddingY;
+    
+    // Render drop down menu on top
+    if (GuiDropdownBox(bounds, micList, &active, editMode)) editMode = !editMode;
 }          
 
