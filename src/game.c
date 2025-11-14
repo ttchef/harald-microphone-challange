@@ -20,7 +20,21 @@ static void updatePlayer(Context *context, float dt) {
     // Over threshold?
     int32_t volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
     if (p->onGround && volume > 200) {
-        p->vel.y = -600.0f;
+        p->vel.y = -volume * PLAYER_VOLUME_VELO_FACTOR;
+        p->isJumping = true;
+        p->volPeak = volume;
+        p->strengthCooldown = PLAYER_STRENGTH_COOLDOWN;
+    }
+    else if (p->isJumping) {
+        if (p->strengthCooldown <= 0.0f) {
+            p->isJumping = false;
+        }
+        if (volume > p->volPeak) {
+            float diff = volume - p->volPeak;
+            p->vel.y -= diff * PLAYER_VOLUME_VELO_FACTOR;
+            p->volPeak = volume;
+        }
+        p->strengthCooldown -= dt;
     }
 
     p->acc.y = 500.0f;
