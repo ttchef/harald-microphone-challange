@@ -17,7 +17,6 @@ void renderGui(Context* context) {
     int32_t elementWidth = context->guiWidth - 2 * paddingX;
 
     int32_t buttonHeight = 30;
-    const char* micList = "Default;Fifine Microphone";
     Rectangle bounds = { .x = startX, .y = currentY, .width = elementWidth, .height = buttonHeight };
     static int active = 0;
     static bool editMode = false;
@@ -51,6 +50,6 @@ void renderGui(Context* context) {
     currentY += maxHeight + paddingY;
     
     // Render drop down menu on top
-    if (GuiDropdownBox(bounds, micList, &active, editMode)) editMode = !editMode;
+    if (GuiDropdownBox(bounds, context->micList, &active, editMode)) editMode = !editMode;
 }          
 

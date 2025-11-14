@@ -18,8 +18,9 @@ typedef struct AudioData {
     atomic_int volR;
 } AudioData;
 
+struct Context;
 // Returns device id
-int32_t initAudio(AudioData* data);
+int32_t initAudio(struct Context* context);
 void deinitAudio();
 
 static inline void checkErr(PaError err) {

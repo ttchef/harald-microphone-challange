@@ -18,7 +18,7 @@ int main() {
     
     InitWindow(context.windowWidth, context.windowHeight, "Audio");
 
-    int32_t device = initAudio(&context.data);
+    int32_t device = initAudio(&context);
 
     while (!WindowShouldClose()) {
         BeginDrawing();
