@@ -19,13 +19,62 @@ static bool isUsefullMic(const PaDeviceInfo* info) {
         "speex", "upmix", "vdownmix", "samplerate",
         "speexrate", "lavrate", "webrtc", "hdmi",
         "HDA NVidia", "TU116", "hw:", "Zen", "jack",
-        "sysdefault", "pipewire", "pulse"
+        "sysdefault", "pipewire", "pulse", "discord"
     };
 
     for (int32_t i = 0; i < ARRAY_COUNT(blacklist); i++) {
         if (strcasestr(info->name, blacklist[i])) return false;
     }
     return true;
+}
+
+static void generateMicList(Context* context, int32_t defaultDevice) {
+    // Get Device List
+    int32_t deviceCount = Pa_GetDeviceCount();
+    if (deviceCount <= 0) return;
+
+    bool first = true;
+    int32_t used = 0;
+    context->deviceCount = 0;
+    for (int32_t i = 0; i < deviceCount; i++) {
+        const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
+        if (!info) continue;   
+        if (!isUsefullMic(info)) continue;
+
+        const char* name = info->name;
+        size_t nameLen = strlen(name);
+        if (used + nameLen >= MIC_CHAR_COUNT) break;
+
+        if (!first) strcat(context->micList, ";");
+        strcat(context->micList, info->name);
+        used += nameLen;
+
+        // Add to device array
+        context->deviceCount++;
+        context->devices = realloc(context->devices, sizeof(AudioDevice) * context->deviceCount);
+        if (!context->devices) {
+            fprintf(stderr, "Failed to allocate devices!\n");
+            exit(EXIT_FAILURE);
+        }
+        context->devices[context->deviceCount - 1].paIndex = i;
+        context->devices[context->deviceCount - 1].micListIndex = context->deviceCount - 1;
+        
+        first = false;
+    }
+
+    // Check what is default in micList
+    bool found = false;
+    for (int32_t i = 0; i < context->deviceCount; i++) {
+        if (context->devices[i].paIndex == defaultDevice) {
+            context->activeDevice = i;
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        fprintf(stderr, "Didnt recognize default device\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_t framesPerBuffer,
@@ -53,36 +102,18 @@ static int32_t testCallback(const void* inputBuffer, void* outputBuffer, uint64_
     return 0;
 }
 
-int32_t initAudio(Context* context) {
+void initAudio(Context* context) {
     err = Pa_Initialize();
     checkErr(err);
+
 
     int32_t device = Pa_GetDefaultInputDevice();
     if (device == paNoDevice) {
         fprintf(stderr, "Failed to find default device!\n");
         exit(EXIT_FAILURE);
     }
-    context->device = device;
-
-    // Get Device List
-    int32_t deviceCount = Pa_GetDeviceCount();
-    if (deviceCount) {
-        bool first = true;
-        for (int32_t i = 0; i < deviceCount; i++) {
-            const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
-            if (!info) continue;   
-            if (!isUsefullMic(info)) continue;
-
-            const char* name = info->name;
-            size_t nameLen = strlen(name);
-            if (context->micListUsed + nameLen >= MIC_CHAR_COUNT) break;
-
-            if (!first) strcat(context->micList, ";");
-            strcat(context->micList, info->name);
-            context->micListUsed += nameLen;
-            first = false;
-        }
-    }
+    
+    generateMicList(context, device);
 
     PaStreamParameters inputParameters = {
         .channelCount = 1,
@@ -105,7 +136,6 @@ int32_t initAudio(Context* context) {
 
     err = Pa_StartStream(stream);
     checkErr(err);
-    return device;
 }
 
 void deinitAudio() {

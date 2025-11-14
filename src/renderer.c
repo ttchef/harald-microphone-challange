@@ -51,5 +51,6 @@ void renderGui(Context* context) {
     
     // Render drop down menu on top
     if (GuiDropdownBox(bounds, context->micList, &active, editMode)) editMode = !editMode;
+    context->activeDevice = active;
 }          
 

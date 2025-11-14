@@ -13,14 +13,20 @@
 #define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 512
 
+typedef struct AudioDevice {
+    int32_t paIndex;
+    int32_t micListIndex; 
+} AudioDevice;
+
 typedef struct AudioData {
     atomic_int volL;
     atomic_int volR;
 } AudioData;
 
 struct Context;
+
 // Returns device id
-int32_t initAudio(struct Context* context);
+void initAudio(struct Context* context);
 void deinitAudio();
 
 static inline void checkErr(PaError err) {
