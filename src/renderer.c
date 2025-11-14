@@ -16,8 +16,9 @@ void renderGui(Context* context) {
     int32_t elementWidth = context->guiWidth - 2 * paddingX;
 
     // Draw Audio Background
-    DrawRectangle(startX, currentY, elementWidth, 500, BLACK);
-    int32_t volume = fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR));
-    DrawRectangle(startX + paddingX, currentY + paddingY, elementWidth / 2 - paddingX, volume, RED);
+    int32_t maxHeight = 500;
+    DrawRectangle(startX, currentY, elementWidth, maxHeight, BLACK);
+    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight);
+    DrawRectangle(startX + elementWidth / 4, currentY + maxHeight - paddingY - volume, elementWidth / 2, volume, RED);
 }          
 
