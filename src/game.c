@@ -19,7 +19,7 @@ static void updatePlayer(Context *context, float dt) {
     
     // Over threshold?
     int32_t volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
-    if (p->onGround && volume > 200) {
+    if (p->onGround && volume > PLAYER_JUMP_THRESHOLD) {
         p->vel.y = -volume * PLAYER_VOLUME_VELO_FACTOR;
         p->isJumping = true;
         p->volPeak = volume;
@@ -37,7 +37,7 @@ static void updatePlayer(Context *context, float dt) {
         p->strengthCooldown -= dt;
     }
 
-    p->acc.y = 500.0f;
+    p->acc.y = GAME_GRAVITY;
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
 

@@ -7,7 +7,9 @@
 #include <raymath.h>
 
 #define PLAYER_STRENGTH_COOLDOWN (0.12f)
-#define PLAYER_VOLUME_VELO_FACTOR (2)
+#define PLAYER_VOLUME_VELO_FACTOR (1.3)
+#define PLAYER_JUMP_THRESHOLD (120)
+#define GAME_GRAVITY (800.0f)
 
 typedef struct Player {
     bool onGround;
