@@ -15,9 +15,9 @@ void initGame(Context *context) {
 static void updatePlayer(GameData* gameData, float dt) {
     Player* p = &gameData->player;
     
-    p->acc.y = 0.1f;
-    p->vel = Vector2Add(p->vel, p->acc);
-    p->pos = Vector2Add(p->pos, p->vel);
+    p->acc.y = 300.0f;
+    p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
+    p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
 
     if (p->pos.y + p->dim.y > gameData->groundY && p->vel.y > 0) {
         p->vel.y *= -1;
