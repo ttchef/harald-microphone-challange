@@ -19,7 +19,8 @@ static bool isUsefullMic(const PaDeviceInfo* info) {
         "speex", "upmix", "vdownmix", "samplerate",
         "speexrate", "lavrate", "webrtc", "hdmi",
         "HDA NVidia", "TU116", "hw:", "Zen", "jack",
-        "sysdefault", "pipewire", "pulse", "discord"
+        "sysdefault", "pipewire", "pulse", "discord",
+        "Chromium"
     };
 
     for (int32_t i = 0; i < ARRAY_COUNT(blacklist); i++) {

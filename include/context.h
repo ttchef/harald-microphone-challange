@@ -3,6 +3,7 @@
 #define CONTEXT_H
 
 #include "audio.h"
+#include "game.h"
 
 #define MIC_CHAR_COUNT 2056
 
@@ -20,6 +21,9 @@ typedef struct Context {
     int32_t deviceCount;
     AudioDevice* devices;
     int32_t activeDevice;
+
+    // Game
+    GameData gameData;
 } Context;
 
 #endif // CONTEXT_H

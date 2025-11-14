@@ -1,5 +1,6 @@
 
 #include "audio.h"
+#include "game.h"
 #include "context.h"
 #include "renderer.h"
 
@@ -17,11 +18,14 @@ int main() {
     };
     
     InitWindow(context.windowWidth, context.windowHeight, "Audio");
+    SetTargetFPS(60);
     initAudio(&context);
+    initGame(&context);
 
     while (!WindowShouldClose()) {
         BeginDrawing();
             ClearBackground(BLACK);
+            renderGame(&context);
             renderGui(&context);
         EndDrawing();
     }

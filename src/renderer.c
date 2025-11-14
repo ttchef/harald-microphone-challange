@@ -9,6 +9,11 @@
 #include <raylib.h>
 #include "raygui.h"
 
+void renderGame(Context *context) {
+    DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
+    DrawRectangleGradientV(0, context->gameData.groundY, context->gameWidth, context->windowHeight - context->gameData.groundY, GREEN, DARKGREEN);
+}
+
 void renderGui(Context* context) {
     DrawRectangle(context->guiOffset, 0, context->guiWidth, context->windowHeight, DARKGRAY);
     int32_t paddingX = 15;
