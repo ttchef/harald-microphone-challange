@@ -7,6 +7,7 @@
 #include <raymath.h>
 
 typedef struct Player {
+    bool onGround;
     Vector2 pos;
     Vector2 vel;
     Vector2 acc;

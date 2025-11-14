@@ -19,17 +19,18 @@ static void updatePlayer(Context *context, float dt) {
     
     // Over threshold?
     int32_t volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
-    if (volume > 200) {
-        p->vel.y = -300.0f;
+    if (p->onGround && volume > 200) {
+        p->vel.y = -600.0f;
     }
 
     p->acc.y = 500.0f;
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
 
+    p->onGround = false;
     if (p->pos.y + p->dim.y > gameData->groundY && p->vel.y > 0) {
-        p->vel.y *= -1;
         p->pos.y = gameData->groundY - p->dim.y;
+        p->onGround = true;
     }
 }
 
