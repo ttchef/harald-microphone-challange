@@ -10,8 +10,17 @@
 #include "raygui.h"
 
 void renderGame(Context *context) {
+    GameData* game = &context->gameData;
     DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
     DrawRectangleGradientV(0, context->gameData.groundY, context->gameWidth, context->windowHeight - context->gameData.groundY, GREEN, DARKGREEN);
+
+    Rectangle player = {
+        .x = game->player.pos.x,
+        .y = game->player.pos.y,
+        .width = game->player.dim.x,
+        .height = game->player.dim.y,
+    };
+    DrawRectangleRounded(player, 0.2f, 10, RAYWHITE);
 }
 
 void renderGui(Context* context) {

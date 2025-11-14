@@ -23,6 +23,7 @@ int main() {
     initGame(&context);
 
     while (!WindowShouldClose()) {
+        updateGame(&context, GetFrameTime());
         BeginDrawing();
             ClearBackground(BLACK);
             renderGame(&context);

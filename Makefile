@@ -26,7 +26,7 @@ $(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-run: $(TARGET)
+run: clean $(TARGET)
 	./$(TARGET)
 
 clean:
