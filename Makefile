@@ -4,7 +4,7 @@ CC = gcc
 VENDOR = vendor
 INCLUDE_PATH = -Iinclude -I$(VENDOR)/raygui/src
 
-CFLAGS = -g -O0 $(INCLUDE_PATH)
+CFLAGS = -g -O0 -fsanitize=address -fsanitize=undefined -std=c11 $(INCLUDE_PATH) 
 LDFLAGS = -lraylib -lm -lportaudio
 
 BUILD_DIR = build

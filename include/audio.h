@@ -21,12 +21,14 @@ typedef struct AudioDevice {
 typedef struct AudioData {
     atomic_int volL;
     atomic_int volR;
+    atomic_int requestedChannels;
 } AudioData;
 
 struct Context;
 
 // Returns device id
 void initAudio(struct Context* context);
+void switchDevice(struct Context* context);
 void deinitAudio();
 
 static inline void checkErr(PaError err) {

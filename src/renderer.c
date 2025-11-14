@@ -1,5 +1,6 @@
 
 #include "renderer.h"
+#include "audio.h"
 #include "context.h"
 
 #include <math.h>
@@ -16,11 +17,15 @@ void renderGui(Context* context) {
     int32_t startX = context->guiOffset + paddingX;
     int32_t elementWidth = context->guiWidth - 2 * paddingX;
 
+    // Select mic dropdown menu
     int32_t buttonHeight = 30;
     Rectangle bounds = { .x = startX, .y = currentY, .width = elementWidth, .height = buttonHeight };
-    static int active = 0;
+    static bool first = true;
+    static int32_t active = 0;
+    static int32_t oldActive = 0;
     static bool editMode = false;
     currentY += buttonHeight + paddingY;
+    active = first ? context->activeDevice : active;
 
     // Draw Audio Background
     int32_t maxHeight = 500;
@@ -51,6 +56,11 @@ void renderGui(Context* context) {
     
     // Render drop down menu on top
     if (GuiDropdownBox(bounds, context->micList, &active, editMode)) editMode = !editMode;
-    context->activeDevice = active;
+    if (active != oldActive) {
+        context->activeDevice = active;
+        switchDevice(context);
+        oldActive = active;
+    }
+    first = false;
 }          
 
