@@ -3,6 +3,7 @@
 #include "context.h"
 
 #include <portaudio.h>
+#include <stdatomic.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -109,6 +110,45 @@ static int32_t audioCallback(const void* inputBuffer, void* outputBuffer, unsign
     atomic_store(&data->volL, (int32_t)(volLeft * 400));
     atomic_store(&data->volR, (int32_t)(volRight * 400));
 
+    for (uint32_t i = 0; i < framesPerBuffer; i++) {
+        float sample = (data->requestedChannels == 1)
+                            ? in[i]
+                            : 0.5f * (in[2*i] + in[2*i+1]); // stereo → mono
+        data->lastSamples[data->sampleWriteIndex] = sample;
+        data->sampleWriteIndex = (data->sampleWriteIndex + 1) & 4095;
+    }
+
+    int32_t bestLag = 0;
+    float bestCorr = 0.0f;
+
+    int32_t sampleRate = atomic_load(&data->sampleRate);
+    int32_t minLag = sampleRate / 450;
+    int32_t maxLag = sampleRate / 70;
+
+    for (int32_t lag = minLag; lag < maxLag; lag++) {
+        float corr = 0.0f;
+        for (int32_t i = 0; i < 2048; i++) {
+            int32_t idx1 = (data->sampleWriteIndex - 1 - i) & 4095;
+            int32_t idx2 = (data->sampleWriteIndex - 1 - i - lag) & 4095;
+            corr += data->lastSamples[idx1] * data->lastSamples[idx2];
+        }
+        if (corr > bestCorr) {
+            bestCorr = corr;
+            bestLag = lag;
+        }
+    }
+
+    if (bestLag > 0) {
+        float pitchHz = 44100.0f / (float)bestLag;
+        uint32_t bits;
+        memcpy(&bits, &pitchHz, sizeof(bits));
+        atomic_store(&data->pitchBits, bits);
+
+    } else {
+        uint32_t bits = 0;
+        atomic_store(&data->pitchBits, bits);
+    }
+
     return 0;
 }
 
@@ -120,6 +160,7 @@ static void createStream(Context* context, int32_t device) {
     }
 
     context->data.requestedChannels = (deviceInfo->maxInputChannels >= 2) ? 2 : 1;
+    context->data.sampleRate = deviceInfo->defaultSampleRate;
 
     PaStreamParameters inputParameters = {
         .channelCount = context->data.requestedChannels,
@@ -128,16 +169,6 @@ static void createStream(Context* context, int32_t device) {
         .sampleFormat = paFloat32,
         inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency,
     };
-
-    /*
-    PaStreamParameters outputParameters = {
-        .channelCount = 1,
-        .device = device,
-        .hostApiSpecificStreamInfo = NULL,
-        .sampleFormat = paFloat32,
-        inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency,
-    };
-        */
 
     err = Pa_OpenStream(&stream, &inputParameters, NULL, deviceInfo->defaultSampleRate, FRAMES_PER_BUFFER, paNoFlag, audioCallback, &context->data);
     checkErr(err);
@@ -149,7 +180,6 @@ static void createStream(Context* context, int32_t device) {
 void initAudio(Context* context) {
     err = Pa_Initialize();
     checkErr(err);
-
 
     int32_t device = Pa_GetDefaultInputDevice();
     if (device == paNoDevice) {
@@ -180,5 +210,12 @@ void deinitAudio() {
 
     err = Pa_Terminate();
     checkErr(err);
+}
+
+float getPitch(Context* context) {
+    uint32_t bits = atomic_load(&context->data.pitchBits);
+    float pitch;
+    memcpy(&pitch, &bits, sizeof(pitch));
+    return pitch;
 }
 

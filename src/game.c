@@ -1,7 +1,9 @@
 
-#include "game.h"
-#include "context.h"
+#include <game.h>
+#include <context.h>
 #include <raymath.h>
+
+#include <string.h>
 #include <stdatomic.h>
 
 void initGame(Context *context) {
@@ -18,8 +20,9 @@ static void updatePlayer(Context *context, float dt) {
     Player* p = &gameData->player;
     
     // Over threshold?
+    float pitch = getPitch(context);
     int32_t volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
-    if (p->onGround && volume > PLAYER_JUMP_THRESHOLD) {
+    if (volume > PLAYER_JUMP_THRESHOLD && p->onGround) {
         p->vel.y = -volume * PLAYER_VOLUME_VELO_FACTOR;
         p->isJumping = true;
         p->volPeak = volume;
@@ -37,6 +40,15 @@ static void updatePlayer(Context *context, float dt) {
         p->strengthCooldown -= dt;
     }
 
+    if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch < 250) {
+        p->vel.x += pitch / 2;
+    }
+    else if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch >= 250) {
+        p->vel.x -= pitch / 2;
+    }
+    if (p->vel.x > 200.0f) p->vel.x = 200.0f;
+    else if (p->vel.x < -200.0f) p->vel.x = -200.0f;
+
     p->acc.y = GAME_GRAVITY;
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
@@ -50,6 +62,7 @@ static void updatePlayer(Context *context, float dt) {
 
 void updateGame(Context *context, float dt) {
     updatePlayer(context, dt);
+    printf("Picth: %f\n", getPitch(context));
 }
 
 

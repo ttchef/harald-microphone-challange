@@ -10,6 +10,7 @@
 #define PLAYER_VOLUME_VELO_FACTOR (1.3)
 #define PLAYER_JUMP_THRESHOLD (120)
 #define GAME_GRAVITY (800.0f)
+#define GAME_MAX_OBSTACLES 20
 
 typedef struct Player {
     bool onGround;
@@ -22,9 +23,16 @@ typedef struct Player {
     Vector2 dim;
 } Player;
 
+typedef struct Obstacle {
+    bool isActive;
+    Vector2 pos;
+    Vector2 dim;
+} Obstacle;
+
 typedef struct GameData {
     int32_t groundY;
     Player player;
+    Obstacle obstacles[GAME_MAX_OBSTACLES];
 } GameData;
 
 struct Context;

@@ -2,6 +2,7 @@
 #include "renderer.h"
 #include "audio.h"
 #include "context.h"
+#include "game.h"
 
 #include <math.h>
 #include <stdatomic.h>
@@ -13,6 +14,13 @@ void renderGame(Context *context) {
     GameData* game = &context->gameData;
     DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
     DrawRectangleGradientV(0, context->gameData.groundY, context->gameWidth, context->windowHeight - context->gameData.groundY, GREEN, DARKGREEN);
+
+    // Obstacles
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!game->obstacles[i].isActive) continue;
+        Obstacle* obs = &game->obstacles[i];
+        DrawRectangle(obs->pos.x, obs->pos.y, obs->dim.x, obs->dim.y, BLACK);
+    }
 
     Rectangle player = {
         .x = game->player.pos.x,
