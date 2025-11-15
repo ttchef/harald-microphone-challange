@@ -8,8 +8,9 @@
 
 #define PLAYER_STRENGTH_COOLDOWN (0.12f)
 #define PLAYER_VOLUME_VELO_FACTOR (1.3)
-#define PLAYER_JUMP_THRESHOLD (120)
+#define PLAYER_JUMP_THRESHOLD (180)
 #define GAME_GRAVITY (800.0f)
+#define GROUND_FRICTION (5.0f)
 #define GAME_MAX_OBSTACLES 20
 
 typedef struct Player {
@@ -17,6 +18,7 @@ typedef struct Player {
     bool isJumping;
     float volPeak;
     float strengthCooldown;
+    float pitchFiltered;
     Vector2 pos;
     Vector2 vel;
     Vector2 acc;
