@@ -24,6 +24,7 @@ typedef struct Context {
 
     // Game
     GameData gameData;
+    bool isMultiplayer;
 } Context;
 
 #endif // CONTEXT_H

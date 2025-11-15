@@ -49,6 +49,24 @@ void renderGui(Context* context) {
     currentY += buttonHeight + paddingY;
     active = first ? context->activeDevice : active;
 
+    // Multiplayer text
+    const char* text = TextFormat("Multiplayer: %s\n", context->isMultiplayer ? "on " : "off");
+    int32_t fontSize = 20;
+    int32_t textWidth = MeasureText(text, fontSize);
+    while (textWidth > elementWidth) {
+        fontSize--;
+        textWidth = MeasureText(text, fontSize);
+    }
+    int32_t multiplayerWidth = MeasureText("Multiplayer: ", fontSize);
+    DrawRectangle(startX + multiplayerWidth, currentY, elementWidth - multiplayerWidth - paddingX / 2, fontSize, context->isMultiplayer ? DARKGREEN : RED);
+    DrawText(text, startX, currentY, fontSize, RAYWHITE);
+    currentY += fontSize + paddingY;
+
+    // Multiplayer button
+    Rectangle bounds2 = { .x = startX, .y = currentY, .width = elementWidth, .height = buttonHeight };
+    if (GuiButton(bounds2, "Toggle Multiplayer")) context->isMultiplayer = !context->isMultiplayer;
+    currentY += buttonHeight + paddingY;   
+
     // Draw Audio Background
     int32_t maxHeight = 500;
     DrawRectangle(startX, currentY, elementWidth, maxHeight, BLACK);

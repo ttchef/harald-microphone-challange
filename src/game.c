@@ -40,7 +40,7 @@ static void updateObstacles(Context* context, float dt) {
         obs->pos.x -= 150.0f * dt;
 
         // Delete
-        if (obs->pos.x - obs->dim.x < 0) obs->isActive = false;
+        if (obs->pos.x + obs->dim.x < 0) obs->isActive = false;
     }
 }
 
