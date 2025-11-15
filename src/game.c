@@ -1,6 +1,7 @@
 
 #include <game.h>
 #include <context.h>
+#include <audio.h>
 #include <raylib.h>
 #include <raymath.h>
 
@@ -14,6 +15,8 @@ void initGame(Context *context) {
     // Player
     data->player.pos = (Vector2){context->windowWidth * 0.2f, context->windowHeight * 0.5f};
     data->player.dim = (Vector2){40, 40};
+
+    memcpy(&data->player2, &data->player, sizeof(Player));
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -44,15 +47,20 @@ static void updateObstacles(Context* context, float dt) {
     }
 }
 
-static void updatePlayer(Context *context, float dt) {
+static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) {
     GameData* gameData = &context->gameData;
-    Player* p = &gameData->player;
-    
+    Player* p = playerId == PLAYER_1 ? &gameData->player : &gameData->player2;
+
     // Over threshold?
-    float pitch = getPitch(context);
+    float pitch = getPitch(context, playerId);
+    printf("Pitch: %f\n", pitch);
     p->pitchFiltered = 0.9f * p->pitchFiltered + 0.1f * pitch;
     pitch = p->pitchFiltered;
-    int32_t volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
+
+    int32_t volume;
+    if (playerId == PLAYER_1) volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
+    else if (playerId == PLAYER_2) volume = fmaxf(atomic_load(&context->dataP2.volR), atomic_load(&context->dataP2.volL));
+
     if (volume > PLAYER_JUMP_THRESHOLD && p->onGround) {
         p->vel.y = -volume * PLAYER_VOLUME_VELO_FACTOR;
         p->isJumping = true;
@@ -112,9 +120,10 @@ static void handleInput(Context* context) {
 
 void updateGame(Context *context, float dt) {
     handleInput(context);
-    updatePlayer(context, dt);
+    updatePlayer(context, dt, PLAYER_1);
+    if (context->isMultiplayer) updatePlayer(context, dt, PLAYER_2);
     updateObstacles(context, dt);
-    printf("Picth: %f\n", context->gameData.player.pitchFiltered);
+    //printf("Picth: %f\n", context->gameData.player2.pitchFiltered);
 }
 
 

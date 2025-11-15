@@ -15,6 +15,7 @@ int main() {
         .gameWidth = 1000,
         .guiWidth = 200,
         .guiOffset = 1200 - 200,
+        .firstMultiplayerAdd = true,
     };
     
     InitWindow(context.windowWidth, context.windowHeight, "Audio");

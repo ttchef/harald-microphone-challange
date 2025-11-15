@@ -12,6 +12,11 @@
 
 #define FRAMES_PER_BUFFER 512
 
+typedef enum PlayerIdentifier {
+    PLAYER_1,
+    PLAYER_2,
+} PlayerIdentifier;
+
 typedef struct AudioDevice {
     int32_t paIndex;
     int32_t micListIndex; 
@@ -33,10 +38,10 @@ struct Context;
 
 // Returns device id
 void initAudio(struct Context* context);
-void switchDevice(struct Context* context);
+void switchDevice(struct Context* context, PlayerIdentifier playerIdentifier);
 void deinitAudio();
 
-float getPitch(struct Context* context);
+float getPitch(struct Context* context, PlayerIdentifier playerIdentifier);
 
 static inline void checkErr(PaError err) {
     if (err != paNoError) {

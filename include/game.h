@@ -34,6 +34,7 @@ typedef struct Obstacle {
 typedef struct GameData {
     int32_t groundY;
     Player player;
+    Player player2;
     Obstacle obstacles[GAME_MAX_OBSTACLES];
 } GameData;
 

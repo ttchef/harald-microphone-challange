@@ -10,6 +10,7 @@
 
 PaError err = {0};
 PaStream* stream;
+PaStream* streamP2;
 
 #define ARRAY_COUNT(arr) ((sizeof((arr)) / sizeof((arr)[0])))
 
@@ -152,15 +153,17 @@ static int32_t audioCallback(const void* inputBuffer, void* outputBuffer, unsign
     return 0;
 }
 
-static void createStream(Context* context, int32_t device) {
+static void createStream(Context* context, int32_t device, PlayerIdentifier p) {
+    PaStream** s = p == PLAYER_1 ? &stream : &streamP2;
     const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo(device);
     if (!deviceInfo) {
         fprintf(stderr, "Invalid device index: %d\n", device);
         exit(EXIT_FAILURE);
     }
 
-    context->data.requestedChannels = (deviceInfo->maxInputChannels >= 2) ? 2 : 1;
-    context->data.sampleRate = deviceInfo->defaultSampleRate;
+    AudioData* data = p == PLAYER_1 ? &context->data : &context->dataP2;
+    data->requestedChannels = (deviceInfo->maxInputChannels >= 2) ? 2 : 1;
+    data->sampleRate = deviceInfo->defaultSampleRate;
 
     PaStreamParameters inputParameters = {
         .channelCount = context->data.requestedChannels,
@@ -170,10 +173,10 @@ static void createStream(Context* context, int32_t device) {
         inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency,
     };
 
-    err = Pa_OpenStream(&stream, &inputParameters, NULL, deviceInfo->defaultSampleRate, FRAMES_PER_BUFFER, paNoFlag, audioCallback, &context->data);
+    err = Pa_OpenStream(s, &inputParameters, NULL, deviceInfo->defaultSampleRate, FRAMES_PER_BUFFER, paNoFlag, audioCallback, data);
     checkErr(err);
 
-    err = Pa_StartStream(stream);
+    err = Pa_StartStream(*s);
     checkErr(err);
 }
 
@@ -188,17 +191,28 @@ void initAudio(Context* context) {
     }
     
     generateMicList(context, device);
-    createStream(context, device);
+    createStream(context, device, PLAYER_1);
 }
 
-void switchDevice(Context *context) {
-    err = Pa_StopStream(stream);
-    checkErr(err);
+void switchDevice(Context *context, PlayerIdentifier p) {
+    PaStream** s = p == PLAYER_1 ? &stream : &streamP2;
+    if (p == PLAYER_2 && !context->firstMultiplayerAdd) {
+        err = Pa_StopStream(*s);
+        checkErr(err);
 
-    err = Pa_CloseStream(stream);
-    checkErr(err);
+        err = Pa_CloseStream(*s);
+        checkErr(err);
+    }
+    else if (p == PLAYER_1) {
+        err = Pa_StopStream(*s);
+        checkErr(err);
 
-    createStream(context, context->devices[context->activeDevice].paIndex);
+        err = Pa_CloseStream(*s);
+        checkErr(err);
+    }
+
+    int32_t deviceIndex = p == PLAYER_1 ? context->activeDevice : context->activeDeviceP2;
+    createStream(context, context->devices[deviceIndex].paIndex, p);
 }
 
 void deinitAudio() {
@@ -212,8 +226,11 @@ void deinitAudio() {
     checkErr(err);
 }
 
-float getPitch(Context* context) {
-    uint32_t bits = atomic_load(&context->data.pitchBits);
+float getPitch(Context* context, PlayerIdentifier p) {
+    uint32_t bits;
+    if (p == PLAYER_1) bits = atomic_load(&context->data.pitchBits);
+    else if (p == PLAYER_2) bits = atomic_load(&context->dataP2.pitchBits);
+    
     float pitch;
     memcpy(&pitch, &bits, sizeof(pitch));
     return pitch;

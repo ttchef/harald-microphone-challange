@@ -17,14 +17,17 @@ typedef struct Context {
 
     // Audio
     AudioData data;
+    AudioData dataP2;
     char micList[MIC_CHAR_COUNT];
     int32_t deviceCount;
     AudioDevice* devices;
     int32_t activeDevice;
+    int32_t activeDeviceP2;
 
     // Game
     GameData gameData;
     bool isMultiplayer;
+    bool firstMultiplayerAdd;
 } Context;
 
 #endif // CONTEXT_H
