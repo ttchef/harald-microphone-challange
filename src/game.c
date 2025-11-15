@@ -1,6 +1,7 @@
 
 #include <game.h>
 #include <context.h>
+#include <raylib.h>
 #include <raymath.h>
 
 #include <string.h>
@@ -13,6 +14,34 @@ void initGame(Context *context) {
     // Player
     data->player.pos = (Vector2){context->windowWidth * 0.2f, context->windowHeight * 0.5f};
     data->player.dim = (Vector2){40, 40};
+}
+
+static void spawnRandomObstacle(Context* context) {
+    GameData* gameData = &context->gameData;
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (gameData->obstacles[i].isActive) continue;
+        
+        Obstacle* obs = &gameData->obstacles[i];
+        obs->isActive = true;
+        obs->dim = (Vector2){20, 20};
+        obs->pos.x = context->gameWidth * 0.8f;
+        obs->pos.y = context->windowHeight * 0.8f;
+        
+        break;
+    }
+}
+
+static void updateObstacles(Context* context, float dt) {
+    GameData* gameData = &context->gameData;
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!gameData->obstacles[i].isActive) continue;
+
+        Obstacle* obs = &gameData->obstacles[i];
+        obs->pos.x -= 150.0f * dt;
+
+        // Delete
+        if (obs->pos.x - obs->dim.x < 0) obs->isActive = false;
+    }
 }
 
 static void updatePlayer(Context *context, float dt) {
@@ -75,8 +104,16 @@ static void updatePlayer(Context *context, float dt) {
     }
 }
 
+static void handleInput(Context* context) {
+    if (IsKeyPressed(KEY_A)) {
+        spawnRandomObstacle(context);
+    }
+}
+
 void updateGame(Context *context, float dt) {
+    handleInput(context);
     updatePlayer(context, dt);
+    updateObstacles(context, dt);
     printf("Picth: %f\n", context->gameData.player.pitchFiltered);
 }
 
