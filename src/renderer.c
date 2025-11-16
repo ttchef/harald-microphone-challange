@@ -37,6 +37,8 @@ void renderGame(Context *context) {
         player.height = game-> player2.dim.y;
         DrawRectangleRounded(player, 0.2f, 10, PINK);
     }
+
+    drawRope(&game->rope);
 }
 
 void renderGuiSinglePlayer(Context* context) {

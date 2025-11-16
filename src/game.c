@@ -17,6 +17,8 @@ void initGame(Context *context) {
     data->player.dim = (Vector2){40, 40};
 
     memcpy(&data->player2, &data->player, sizeof(Player));
+
+    createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -79,10 +81,10 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
         p->strengthCooldown -= dt;
     }
 
-    if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch < 250) {
+    if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch < 170) {
         p->vel.x += pitch / 4;
     }
-    else if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch >= 250) {
+    else if (volume > PLAYER_JUMP_THRESHOLD / 2 && pitch >= 170) {
         p->vel.x -= pitch / 4;
     }
     if (p->vel.x > 500.0f) p->vel.x = 500.0f;
@@ -123,7 +125,7 @@ void updateGame(Context *context, float dt) {
     updatePlayer(context, dt, PLAYER_1);
     if (context->isMultiplayer) updatePlayer(context, dt, PLAYER_2);
     updateObstacles(context, dt);
-    //printf("Picth: %f\n", context->gameData.player2.pitchFiltered);
+    updateRope(&context->gameData.rope, dt);
 }
 
 

@@ -2,6 +2,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <rope.h>
+
 #include <stdint.h>
 #include <raylib.h>
 #include <raymath.h>
@@ -36,6 +38,7 @@ typedef struct GameData {
     Player player;
     Player player2;
     Obstacle obstacles[GAME_MAX_OBSTACLES];
+    Rope rope;
 } GameData;
 
 struct Context;
