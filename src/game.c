@@ -19,7 +19,7 @@ void initGame(Context *context) {
     memcpy(&data->player2, &data->player, sizeof(Player));
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
-    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, data->player.pos, (Vector2){250, 30}};
+    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){250, 500}, (Vector2){250, 30}};
     data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
 
 }
@@ -192,6 +192,8 @@ void updateGame(Context *context, float dt) {
         applyPlayerRopeConstraing(context);
         updateRope(&context->gameData.rope, dt, centerP1, centerP2);
     }
+    context->camera.target = game->player.pos;
+    context->camera.offset = (Vector2){context->gameWidth * 0.5f - game->player.dim.x / 2, context->windowHeight * 0.5f};
 }
 
 

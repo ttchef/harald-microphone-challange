@@ -4,6 +4,7 @@
 
 struct Context;
 void renderGame(struct Context* context);
+void renderGameNoCamera(struct Context* context);
 void renderGui(struct Context* context);
 
 #endif // RENDERER_H

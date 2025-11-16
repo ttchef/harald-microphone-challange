@@ -16,6 +16,7 @@ int main() {
         .guiWidth = 200,
         .guiOffset = 1200 - 200,
         .firstMultiplayerAdd = true,
+        .camera = { .zoom = 1.0f},
     };
     
     InitWindow(context.windowWidth, context.windowHeight, "Audio");
@@ -27,7 +28,12 @@ int main() {
         updateGame(&context, GetFrameTime());
         BeginDrawing();
             ClearBackground(BLACK);
-            renderGame(&context);
+
+            renderGameNoCamera(&context);
+            BeginMode2D(context.camera);
+                renderGame(&context);
+            EndMode2D();
+
             renderGui(&context);
         EndDrawing();
     }

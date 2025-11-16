@@ -13,7 +13,6 @@
 
 void renderGame(Context *context) {
     GameData* game = &context->gameData;
-    DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
     DrawRectangleGradientV(0, context->gameData.groundY, context->gameWidth, context->windowHeight - context->gameData.groundY, GREEN, DARKGREEN);
 
     // Obstacles
@@ -51,6 +50,11 @@ void renderGame(Context *context) {
         DrawRectangleRounded(player, 0.2f, 10, PINK);
         drawRope(&game->rope);
     }
+}
+
+void renderGameNoCamera(Context *context) {
+    GameData* game = &context->gameData;
+    DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
 }
 
 void renderGuiSinglePlayer(Context* context) {
