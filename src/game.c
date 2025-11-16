@@ -116,8 +116,9 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
 
     // Update Texture
     p->frameCounter++;
-    if (p->frameCounter >= (60 / p->framesSpeed)) {
+    if (p->frameCounter >= (60 / p->framesSpeed) && !(p->animState == PLAYER_ANIM_STATE_JUMP && p->currentFrame == 2)) {
         p->frameCounter = 0;
+
         p->currentFrame++;
         if (p->currentFrame > playerSpriteAnimationInfo[p->animState].length - 1) p->currentFrame = 0;
 
