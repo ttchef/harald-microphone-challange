@@ -166,9 +166,17 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     // Wall Collision
     if (p->pos.x < -context->gameWidth / 2 && p->vel.x <= 0) {
         p->pos.x = context->gameWidth * 2 - p->dim.x - 10;
+        if (context->isMultiplayer) {
+            Player* p2 = playerId == PLAYER_1 ? &gameData->player2 : &gameData->player;
+            p2->pos = p->pos;
+        }
     }
     else if (p->pos.x + p->dim.x > context->gameWidth * 2) {
         p->pos.x = -context->gameWidth / 2;
+        if (context->isMultiplayer) {
+            Player* p2 = playerId == PLAYER_1 ? &gameData->player2 : &gameData->player;
+            p2->pos = p->pos;
+        }
     }
 }
 
@@ -183,6 +191,7 @@ void updateGame(Context *context, float dt) {
     handleInput(context);
     updatePlayer(context, dt, PLAYER_1);
     updateObstacles(context, dt);
+    updateBackround(context, &game->bg, dt);
 
     if (context->isMultiplayer) {
         updatePlayer(context, dt, PLAYER_2);
@@ -192,6 +201,8 @@ void updateGame(Context *context, float dt) {
         applyPlayerRopeConstraing(context);
         updateRope(&context->gameData.rope, dt, centerP1, centerP2);
     }
+
+    // Camera
     context->camera.target = game->player.pos;
     context->camera.offset = (Vector2){context->gameWidth * 0.5f - game->player.dim.x / 2, context->windowHeight * 0.5f};
 }
