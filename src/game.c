@@ -239,6 +239,13 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
         p->direction = PLAYER_DIRECTION_LEFT;
     } 
     else if (p->vel.x > 15.0f) p->direction = PLAYER_DIRECTION_RIGHT;
+
+    // Change Animation State
+    if (p->isJumping && p->vel.y < -30.0f) p->animState = PLAYER_ANIM_STATE_JUMP;
+    else if (p->onGround) {
+        if (p->vel.x < 30.0f && p->vel.x > -30.0f) p->animState = PLAYER_ANIM_STATE_IDLE;
+        else p->animState = PLAYER_ANIM_STATE_RUN;
+    }
 }
 
 static void handleInput(Context* context) {
