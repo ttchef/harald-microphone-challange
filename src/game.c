@@ -1,4 +1,5 @@
 
+#include "background.h"
 #include "collider.h"
 #include <game.h>
 #include <context.h>
@@ -11,6 +12,7 @@
 
 void initGame(Context *context) {
     GameData* data = &context->gameData;
+    initBackground(&data->bg);
     data->groundY = context->windowHeight * 0.9f;
 
     // Player
@@ -194,4 +196,8 @@ void updateGame(Context *context, float dt) {
     context->camera.offset = (Vector2){context->gameWidth * 0.5f - game->player.dim.x / 2, context->windowHeight * 0.5f};
 }
 
+void deinitGame(Context *context) {
+    GameData* game = &context->gameData;
+    deinitBackground(&game->bg);
+}
 

@@ -39,6 +39,7 @@ int main() {
     }
 
     CloseWindow();
+    deinitGame(&context);
     deinitAudio();
 
     return 0;

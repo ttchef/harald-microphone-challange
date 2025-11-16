@@ -1,6 +1,7 @@
 
 #include "renderer.h"
 #include "audio.h"
+#include "background.h"
 #include "collider.h"
 #include "context.h"
 #include "game.h"
@@ -54,7 +55,9 @@ void renderGame(Context *context) {
 
 void renderGameNoCamera(Context *context) {
     GameData* game = &context->gameData;
-    DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
+    renderBackground(&game->bg, context);
+    //DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
+    //DrawTexture(LoadTexture("res/PirateBomb/Sprites/7-Objects/1-BOMB/2-Bomb On/1.png"), 300, 300, WHITE);
 }
 
 void renderGuiSinglePlayer(Context* context) {

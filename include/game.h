@@ -4,6 +4,7 @@
 
 #include <rope.h>
 #include <collider.h>
+#include <background.h>
 
 #include <stdint.h>
 #include <raylib.h>
@@ -35,6 +36,7 @@ typedef struct Obstacle {
 } Obstacle;
 
 typedef struct GameData {
+    Background bg;
     int32_t groundY;
     Player player;
     Player player2;
@@ -47,5 +49,6 @@ struct Context;
 
 void initGame(struct Context* context);
 void updateGame(struct Context* context, float dt);
+void deinitGame(struct Context* context);
 
 #endif // GAME_H
