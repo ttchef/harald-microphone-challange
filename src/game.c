@@ -162,13 +162,11 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     }
 
     // Wall Collision
-    if (p->pos.x < 0 && p->vel.x <= 0) {
-        p->pos.x = 0;
-        p->vel.x *= -0.4f;
+    if (p->pos.x < -context->gameWidth / 2 && p->vel.x <= 0) {
+        p->pos.x = context->gameWidth * 2 - p->dim.x - 10;
     }
-    else if (p->pos.x + p->dim.x > context->gameWidth) {
-        p->pos.x = context->gameWidth - p->dim.x;
-        p->vel.x *= -0.4f;
+    else if (p->pos.x + p->dim.x > context->gameWidth * 2) {
+        p->pos.x = -context->gameWidth / 2;
     }
 }
 

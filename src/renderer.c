@@ -13,7 +13,7 @@
 
 void renderGame(Context *context) {
     GameData* game = &context->gameData;
-    DrawRectangleGradientV(0, context->gameData.groundY, context->gameWidth, context->windowHeight - context->gameData.groundY, GREEN, DARKGREEN);
+    DrawRectangleGradientV(-context->gameWidth, context->gameData.groundY, context->gameWidth * 4, context->windowHeight - game->groundY + context->camera.target.y / 2.2, GREEN, DARKGREEN);
 
     // Obstacles
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
