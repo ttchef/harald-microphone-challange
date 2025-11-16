@@ -10,20 +10,51 @@
 #include <string.h>
 #include <stdatomic.h>
 
+#define PLAYER_SPRITESHEET_GRIDSIZE 64
+#define PLAYER_SPRITESHEET_COLUM_COUNT 6
+#define PLAYER_SPRITESHEET_ROW_COUNT 6
+
+typedef struct PlayerSpriteAnimationInfo {
+    Vector2 startPos;
+    int32_t length;
+} PlayerSpriteAnimationInfo;
+
+const PlayerSpriteAnimationInfo playerSpriteAnimationInfo[PLAYER_ANIM_STTE_NUM] = {
+    {{0, 0,}, 6},
+    {{0, 1}, 9},
+    {{3, 2}, 10},
+    {{1, 4}, 3},
+    {{4, 4}, 8},
+};
+
 void initGame(Context *context) {
     GameData* data = &context->gameData;
     initBackground(context, &data->bg);
     data->groundY = context->windowHeight * 0.9f;
 
     // Player
+    data->player.texture = LoadTexture("res/StickmanPack-V0.2/StickmanPack/Full/Full.png");
+    data->player.framesSpeed = 8;
+    data->player.frameRec = (Rectangle){0.0f, 0.0f,
+        data->player.texture.width / (float)PLAYER_SPRITESHEET_COLUM_COUNT,
+        data->player.texture.height / (float)PLAYER_SPRITESHEET_ROW_COUNT};
+    data->player.accentColor = WHITE;
     data->player.pos = (Vector2){context->windowWidth * 0.2f, context->windowHeight * 0.5f};
-    data->player.dim = (Vector2){40, 40};
+    data->player.dim = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE, PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE};
+    data->player.hitbox = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE / 3.0f * PLAYER_SCALE, PLAYER_SPRITESHEET_GRIDSIZE * 0.8f * PLAYER_SCALE};
+    data->player.hitboxOrigin = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE / 3.5f, PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE * 0.15f};
+    data->player.direction = PLAYER_DIRECTION_RIGHT;
+
+    // Player 2
     memcpy(&data->player2, &data->player, sizeof(Player));
+    data->player2.texture = LoadTexture("res/StickmanPack-V0.2/StickmanPack/Full/Full.png");
+    data->player2.accentColor = PINK;
+
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
-    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){250, 500}, (Vector2){250, 30}};
-    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
-    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){100, 400}, (Vector2){250, 30}};
+    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 500}, (Vector2){250, 30}};
+    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){200, 300}, (Vector2){250, 30}};
+    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){0, 100}, (Vector2){250, 30}};
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -83,6 +114,25 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     GameData* gameData = &context->gameData;
     Player* p = playerId == PLAYER_1 ? &gameData->player : &gameData->player2;
 
+    // Update Texture
+    p->frameCounter++;
+    if (p->frameCounter >= (60 / p->framesSpeed)) {
+        p->frameCounter = 0;
+        p->currentFrame++;
+        if (p->currentFrame > playerSpriteAnimationInfo[p->animState].length - 1) p->currentFrame = 0;
+
+        Vector2 startPos = playerSpriteAnimationInfo[p->animState].startPos;
+        int32_t frameWidth = p->texture.width / PLAYER_SPRITESHEET_COLUM_COUNT;
+        int32_t frameHeight = p->texture.height / PLAYER_SPRITESHEET_ROW_COUNT;
+
+        int32_t absoluteIndex = startPos.x + p->currentFrame;
+
+        int32_t frameX = (absoluteIndex % PLAYER_SPRITESHEET_COLUM_COUNT) * frameWidth;
+        int32_t frameY = (startPos.y + (int32_t)(absoluteIndex / PLAYER_SPRITESHEET_COLUM_COUNT)) * frameHeight;
+
+        p->frameRec = (Rectangle){frameX, frameY, frameWidth, frameHeight};
+    }
+
     // Over threshold?
     float pitch = getPitch(context, playerId);
     //printf("Pitch: %f\n", pitch);
@@ -135,8 +185,10 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
         
         Collider* coll = &gameData->colliders[i];
         if (checkAABBPlayer(coll, p)) {
-            if (p->vel.x > 0) p->pos.x = coll->pos.x - p->dim.x;
-            else if (p->vel.x < 0) p->pos.x = coll-> pos.x + coll->dim.x;
+            if (p->vel.x > 0) 
+                p->pos.x = coll->pos.x - p->hitbox.x - p->hitboxOrigin.x;
+            else if (p->vel.x < 0) 
+                p->pos.x = coll->pos.x + coll->dim.x - p->hitboxOrigin.x;
             p->vel.x = 0;
         }
     }
@@ -148,22 +200,24 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
         Collider* coll = &gameData->colliders[i];
         if (checkAABBPlayer(coll, p)) {
             if (p->vel.y > 0) { 
-                p->pos.y = coll->pos.y - p->dim.y;
+                p->pos.y = coll->pos.y - p->hitbox.y - p->hitboxOrigin.y;
                 p->onGround = true;
-            }
-            else if (p->vel.y < 0) p->pos.y = coll-> pos.y + coll->dim.y;
+            } else if (p->vel.y < 0) 
+                p->pos.y = coll->pos.y + coll->dim.y - p->hitboxOrigin.y;
+
             p->vel.y = 0;
         }
     }
 
 
     // Ground Collision
-    if (p->pos.y + p->dim.y > gameData->groundY && p->vel.y > 0) {
-        p->pos.y = gameData->groundY - p->dim.y;
+    if (p->pos.y + p->hitboxOrigin.y + p->hitbox.y > gameData->groundY && p->vel.y > 0) {
+        p->pos.y = gameData->groundY - p->hitboxOrigin.y - p->hitbox.y;
         p->onGround = true;
     }
 
     // Wall Collision
+    // No accurate collision because there is no need
     if (p->pos.x < -context->gameWidth / 2 && p->vel.x <= 0) {
         p->pos.x = context->gameWidth * 2 - p->dim.x - 10;
         if (context->isMultiplayer) {
@@ -178,11 +232,28 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
             p2->pos = p->pos;
         }
     }
+
+    // Change player direction
+    // Higher values so no glitching between flipping of character
+    if (p->vel.x < -15.0f) {
+        p->direction = PLAYER_DIRECTION_LEFT;
+    } 
+    else if (p->vel.x > 15.0f) p->direction = PLAYER_DIRECTION_RIGHT;
 }
 
 static void handleInput(Context* context) {
     if (IsKeyPressed(KEY_A)) {
         spawnRandomObstacle(context);
+    }
+    // For Testing :/
+    if (IsKeyPressed(KEY_B)) {
+        context->gameData.player.vel.y = -2000;
+    }
+    if (IsKeyPressed(KEY_C)) {
+        context->gameData.player.animState++;
+    }
+    if (IsKeyPressed(KEY_D)) {
+        context->debugMode = !context->debugMode;
     }
 }
 
@@ -195,8 +266,11 @@ void updateGame(Context *context, float dt) {
 
     if (context->isMultiplayer) {
         updatePlayer(context, dt, PLAYER_2);
-        Vector2 centerP1 = (Vector2){game->player.pos.x + game->player.dim.x / 2, game->player.pos.y + game->player.dim.y / 2};
-        Vector2 centerP2 = (Vector2){game->player2.pos.x + game->player2.dim.x / 2, game->player2.pos.y + game->player2.dim.y / 2};
+        Vector2 centerP1 = (Vector2){game->player.pos.x + game->player.hitboxOrigin.x + game->player.hitbox.x / 2,
+                                        game->player.pos.y + game->player.hitboxOrigin.y + game->player.hitbox.y / 2};
+
+        Vector2 centerP2 = (Vector2){game->player2.pos.x + game->player2.hitboxOrigin.x + game->player2.hitbox.x / 2,
+                                        game->player2.pos.y + game->player2.hitboxOrigin.y + game->player2.hitbox.y / 2};
 
         applyPlayerRopeConstraing(context);
         updateRope(&context->gameData.rope, dt, centerP1, centerP2);
@@ -210,5 +284,8 @@ void updateGame(Context *context, float dt) {
 void deinitGame(Context *context) {
     GameData* game = &context->gameData;
     deinitBackground(&game->bg);
+
+    UnloadTexture(game->player.texture);
+    UnloadTexture(game->player2.texture);
 }
 

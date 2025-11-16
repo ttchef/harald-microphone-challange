@@ -29,6 +29,7 @@ typedef struct Context {
     bool isMultiplayer;
     bool firstMultiplayerAdd;
     Camera2D camera;
+    bool debugMode;
 } Context;
 
 #endif // CONTEXT_H

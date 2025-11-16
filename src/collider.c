@@ -5,10 +5,10 @@
 
 bool checkAABBPlayer(Collider* collider, Player* p) {
     return (
-        p->pos.x < collider->pos.x + collider->dim.x && 
-        p->pos.x + p->dim.x > collider->pos.x &&
-        p->pos.y < collider->pos.y + collider->dim.y && 
-        p->pos.y + p->dim.y > collider->pos.y
+        p->pos.x + p->hitboxOrigin.x < collider->pos.x + collider->dim.x && 
+        p->pos.x + p->hitboxOrigin.x + p->hitbox.x > collider->pos.x &&
+        p->pos.y + p->hitboxOrigin.y < collider->pos.y + collider->dim.y && 
+        p->pos.y + p->hitboxOrigin.y + p->hitbox.y > collider->pos.y
     );
 }
 

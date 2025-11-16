@@ -1,5 +1,7 @@
 # harald-microphone-challange
 
+Thanks to the assets that i got from itch.io :)
+
 # Dependencies
  - raylib 
  - portaudio

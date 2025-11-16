@@ -13,9 +13,24 @@
 #define PLAYER_STRENGTH_COOLDOWN (0.12f)
 #define PLAYER_VOLUME_VELO_FACTOR (1.3)
 #define PLAYER_JUMP_THRESHOLD (180)
+#define PLAYER_SCALE (3)
 #define GAME_GRAVITY (800.0f)
 #define GROUND_FRICTION (15.0f)
 #define GAME_MAX_OBSTACLES 20
+
+typedef enum PlayerDirection {
+    PLAYER_DIRECTION_RIGHT,
+    PLAYER_DIRECTION_LEFT,
+} PlayerDirection;
+
+typedef enum PlayerAnimationState {
+    PLAYER_ANIM_STATE_IDLE,
+    PLAYER_ANIM_STATE_RUN,
+    PLAYER_ANIM_STATE_PUNCH,
+    PLAYER_ANIM_STATE_JUMP,
+    PLAYER_ANIM_STATE_DEATH,
+    PLAYER_ANIM_STTE_NUM
+} PlayerAnimationState;
 
 typedef struct Player {
     bool onGround;
@@ -27,6 +42,18 @@ typedef struct Player {
     Vector2 vel;
     Vector2 acc;
     Vector2 dim;
+    Vector2 hitbox;
+    Vector2 hitboxOrigin;
+    PlayerDirection direction;
+    Texture2D texture;
+    int32_t framesSpeed;
+    int32_t currentFrame;
+    Rectangle frameRec;
+    int32_t frameCounter;
+    Color accentColor;
+    int32_t texRow;
+    int32_t texColumn;
+    PlayerAnimationState animState;
 } Player;
 
 typedef struct Obstacle {

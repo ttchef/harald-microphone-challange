@@ -12,9 +12,34 @@
 #include <raylib.h>
 #include "raygui.h"
 
+static void debugRenderPlayerHitbox(Context* context, Player* p) {
+    GameData* game = &context->gameData;
+    DrawRectangleLines(p->pos.x + p->hitboxOrigin.x, p->pos.y + p->hitboxOrigin.y, p->hitbox.x, p->hitbox.y, GREEN);
+}
+
+static void renderPlayer(Player* p) {
+    Vector2 origin = {0};
+
+    Rectangle srcRec = p->frameRec;
+
+    Rectangle destRec = {
+        .x = p->pos.x,
+        .y = p->pos.y,
+        .width = p->frameRec.width * PLAYER_SCALE,
+        .height = p->frameRec.height * PLAYER_SCALE,
+    };
+
+    if (p->direction == PLAYER_DIRECTION_LEFT) {
+        srcRec.width = -srcRec.width;
+    }
+
+    DrawTexturePro(p->texture, srcRec, destRec, origin, 0.0f, WHITE);
+}
+
 void renderGame(Context *context) {
     GameData* game = &context->gameData;
-    DrawRectangleGradientV(-context->gameWidth, context->gameData.groundY, context->gameWidth * 4, context->windowHeight - game->groundY + context->camera.target.y / 2.2, GREEN, DARKGREEN);
+    DrawRectangleGradientV(-context->gameWidth, context->gameData.groundY,
+                           context->gameWidth * 4, context->windowHeight - game->groundY + context->camera.target.y / 2.2, GREEN, DARKGREEN);
 
     // Obstacles
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
@@ -35,22 +60,14 @@ void renderGame(Context *context) {
         }
     }
 
-    Rectangle player = {
-        .x = game->player.pos.x,
-        .y = game->player.pos.y,
-        .width = game->player.dim.x,
-        .height = game->player.dim.y,
-    };
-    DrawRectangleRounded(player, 0.2f, 10, RAYWHITE);
-
+    renderPlayer(&game->player);
     if (context->isMultiplayer) {
-        player.x = game->player2.pos.x;
-        player.y = game->player2.pos.y;
-        player.width = game->player2.dim.x;
-        player.height = game-> player2.dim.y;
-        DrawRectangleRounded(player, 0.2f, 10, PINK);
+        renderPlayer(&game->player2);
         drawRope(&game->rope);
     }
+
+    if (context->debugMode) debugRenderPlayerHitbox(context, &game->player);
+    if (context->debugMode && context->isMultiplayer)  debugRenderPlayerHitbox(context, &game->player2);
 }
 
 void renderGameNoCamera(Context *context) {
