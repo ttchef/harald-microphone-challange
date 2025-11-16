@@ -17,13 +17,13 @@ typedef struct Rope {
     int32_t numSegments;
     float segmentLength;
     float dampingFactor;
+    float ropeSize;
 } Rope;
 
 void createRope(Rope* rope, int32_t numOfRopeSegments, Vector2 ropeStartPoint, float segmentLength, float dampingFactor);
 void destroyRope(Rope* rope);
 
-void applyRopeConstraints(Rope* rope);
-void updateRope(Rope* rope, float dt);
+void updateRope(Rope* rope, float dt, Vector2 startPos, Vector2 endPos);
 void drawRope(Rope* rope);
 
 #endif // ROPE_H

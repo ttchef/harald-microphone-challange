@@ -13,6 +13,7 @@ void createRope(Rope* rope, int32_t numOfRopeSegments, Vector2 ropeStartPoint, f
     rope->numSegments = numOfRopeSegments;
     rope->segmentLength = segmentLength;
     rope->dampingFactor = dampingFactor;
+    rope->ropeSize = numOfRopeSegments * segmentLength;
     rope->segments = malloc(sizeof(RopeSegment) * numOfRopeSegments);
     if (!rope->segments) {
         fprintf(stderr, "Failed to allocate rope segments!\n");
@@ -30,8 +31,9 @@ void destroyRope(Rope* rope) {
     if (rope && rope->segments) free(rope->segments);
 }
 
-void applyRopeConstraints(Rope *rope) {
-    rope->segments[0].currentPos = GetMousePosition();
+static void applyRopeConstraints(Rope *rope, Vector2 startPos, Vector2 endPos) {
+    rope->segments[0].currentPos = startPos;
+    rope->segments[rope->numSegments - 1].currentPos = endPos;
     for (int32_t i = 0; i < rope->numSegments - 1; i++) {
         RopeSegment* currentSeg = &rope->segments[i];
         RopeSegment* nextSeg = &rope->segments[i + 1];
@@ -52,7 +54,7 @@ void applyRopeConstraints(Rope *rope) {
     }
 }
 
-void updateRope(Rope *rope, float dt) {
+void updateRope(Rope *rope, float dt, Vector2 startPos, Vector2 endPos) {
     for (int32_t i = 0; i < rope->numSegments; i++) {
         RopeSegment* seg = &rope->segments[i];
         Vector2 velocity = Vector2Scale(Vector2Subtract(seg->currentPos, seg->oldPos), rope->dampingFactor);
@@ -62,7 +64,7 @@ void updateRope(Rope *rope, float dt) {
     }
 
     for (int32_t i = 0; i < ROPE_NUM_OF_CONSTRAINT_RUNS; i++) {
-        applyRopeConstraints(rope);
+        applyRopeConstraints(rope, startPos, endPos);
     }
 }
 

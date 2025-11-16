@@ -49,13 +49,38 @@ static void updateObstacles(Context* context, float dt) {
     }
 }
 
+static void applyPlayerRopeConstraing(Context* context) {
+    GameData* game = &context->gameData;
+    Player* p1 = &game->player;
+    Player* p2 = &game->player2;
+    Rope* rope = &game->rope;
+
+    Vector2 delta = Vector2Subtract(p2->pos, p1->pos);
+    float dist = Vector2Length(delta);
+
+    if (dist > rope->ropeSize) {
+        float stretch = dist - rope->ropeSize;
+        Vector2 dir = Vector2Scale(delta, 1.0f / dist);
+
+        float k = 8.0f;
+        float forceMagnitude = stretch * k;
+
+        if (forceMagnitude > 500.0f) forceMagnitude = 500.0f;
+
+        Vector2 pull = Vector2Scale(dir, forceMagnitude);
+
+        p1->vel = Vector2Add(p1->vel, pull);
+        p2->vel = Vector2Subtract(p2->vel, pull);
+    }
+}
+
 static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) {
     GameData* gameData = &context->gameData;
     Player* p = playerId == PLAYER_1 ? &gameData->player : &gameData->player2;
 
     // Over threshold?
     float pitch = getPitch(context, playerId);
-    printf("Pitch: %f\n", pitch);
+    //printf("Pitch: %f\n", pitch);
     p->pitchFiltered = 0.9f * p->pitchFiltered + 0.1f * pitch;
     pitch = p->pitchFiltered;
 
@@ -93,6 +118,7 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     p->acc.y = GAME_GRAVITY;
     if (p->vel.x < 0) p->vel.x += GROUND_FRICTION;
     else if (p->vel.x > 0) p->vel.x -= GROUND_FRICTION;
+
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
 
@@ -121,11 +147,19 @@ static void handleInput(Context* context) {
 }
 
 void updateGame(Context *context, float dt) {
+    GameData* game = &context->gameData;
     handleInput(context);
     updatePlayer(context, dt, PLAYER_1);
-    if (context->isMultiplayer) updatePlayer(context, dt, PLAYER_2);
     updateObstacles(context, dt);
-    updateRope(&context->gameData.rope, dt);
+
+    if (context->isMultiplayer) {
+        updatePlayer(context, dt, PLAYER_2);
+        Vector2 centerP1 = (Vector2){game->player.pos.x + game->player.dim.x / 2, game->player.pos.y + game->player.dim.y / 2};
+        Vector2 centerP2 = (Vector2){game->player2.pos.x + game->player2.dim.x / 2, game->player2.pos.y + game->player2.dim.y / 2};
+
+        applyPlayerRopeConstraing(context);
+        updateRope(&context->gameData.rope, dt, centerP1, centerP2);
+    }
 }
 
 
