@@ -1,4 +1,5 @@
 
+#include "collider.h"
 #include <game.h>
 #include <context.h>
 #include <audio.h>
@@ -15,10 +16,12 @@ void initGame(Context *context) {
     // Player
     data->player.pos = (Vector2){context->windowWidth * 0.2f, context->windowHeight * 0.5f};
     data->player.dim = (Vector2){40, 40};
-
     memcpy(&data->player2, &data->player, sizeof(Player));
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
+    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, data->player.pos, (Vector2){250, 30}};
+    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
+
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -120,16 +123,45 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     else if (p->vel.x > 0) p->vel.x -= GROUND_FRICTION;
 
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
-    p->pos = Vector2Add(p->pos, Vector2Scale(p->vel, dt));
+    p->pos.x += p->vel.x * dt;
+
+    p->onGround = false;
+
+    // Check collider collisios
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!gameData->colliders[i].isActive) continue;
+        
+        Collider* coll = &gameData->colliders[i];
+        if (checkAABBPlayer(coll, p)) {
+            if (p->vel.x > 0) p->pos.x = coll->pos.x - p->dim.x;
+            else if (p->vel.x < 0) p->pos.x = coll-> pos.x + coll->dim.x;
+            p->vel.x = 0;
+        }
+    }
+    p->pos.y += p->vel.y * dt;
+
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!gameData->colliders[i].isActive) continue;
+        
+        Collider* coll = &gameData->colliders[i];
+        if (checkAABBPlayer(coll, p)) {
+            if (p->vel.y > 0) { 
+                p->pos.y = coll->pos.y - p->dim.y;
+                p->onGround = true;
+            }
+            else if (p->vel.y < 0) p->pos.y = coll-> pos.y + coll->dim.y;
+            p->vel.y = 0;
+        }
+    }
+
 
     // Ground Collision
-    p->onGround = false;
     if (p->pos.y + p->dim.y > gameData->groundY && p->vel.y > 0) {
         p->pos.y = gameData->groundY - p->dim.y;
         p->onGround = true;
     }
 
-    // Wal Collision
+    // Wall Collision
     if (p->pos.x < 0 && p->vel.x <= 0) {
         p->pos.x = 0;
         p->vel.x *= -0.4f;

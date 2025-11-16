@@ -1,6 +1,7 @@
 
 #include "renderer.h"
 #include "audio.h"
+#include "collider.h"
 #include "context.h"
 #include "game.h"
 
@@ -20,6 +21,18 @@ void renderGame(Context *context) {
         if (!game->obstacles[i].isActive) continue;
         Obstacle* obs = &game->obstacles[i];
         DrawRectangle(obs->pos.x, obs->pos.y, obs->dim.x, obs->dim.y, BLACK);
+    }
+
+    // Colliders
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!game->colliders[i].isActive) continue;
+        Collider* coll = &game->colliders[i];
+     
+        switch (coll->type) {
+            case COLLIDER_TYPE_RECTANGLE:
+                DrawRectangle(coll->pos.x, coll->pos.y, coll->dim.x, coll->dim.y, DARKGRAY);
+                break;
+        }
     }
 
     Rectangle player = {

@@ -3,6 +3,7 @@
 #define GAME_H
 
 #include <rope.h>
+#include <collider.h>
 
 #include <stdint.h>
 #include <raylib.h>
@@ -12,7 +13,7 @@
 #define PLAYER_VOLUME_VELO_FACTOR (1.3)
 #define PLAYER_JUMP_THRESHOLD (180)
 #define GAME_GRAVITY (800.0f)
-#define GROUND_FRICTION (5.0f)
+#define GROUND_FRICTION (15.0f)
 #define GAME_MAX_OBSTACLES 20
 
 typedef struct Player {
@@ -38,6 +39,7 @@ typedef struct GameData {
     Player player;
     Player player2;
     Obstacle obstacles[GAME_MAX_OBSTACLES];
+    Collider colliders[GAME_MAX_OBSTACLES];
     Rope rope;
 } GameData;
 
