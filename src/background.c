@@ -14,7 +14,7 @@ void initBackground(Context* context, Background* bg) {
         snprintf(path, sizeof(path), "res/BG_DesertMountains/cloud%d.png", i);
         bg->clouds[i].tex = LoadTexture(path);
 
-        int32_t randX = GetRandomValue(context->gameWidth * 0.1f, context->gameWidth * 0.9f - bg->clouds[i].tex.width);
+        int32_t randX = GetRandomValue(-context->gameWidth, context->gameWidth);
         int32_t randY = GetRandomValue(context->windowHeight * 0.1f, context->windowHeight * 0.9f - bg->clouds[i].tex.height);
         float scale = GetRandomValue(20, 100) / 33.0f;
         int32_t order = GetRandomValue(1, 2);
@@ -26,7 +26,15 @@ void initBackground(Context* context, Background* bg) {
 
 void updateBackround(Context *context, Background *bg, float dt) {
     for (int32_t i = 0; i < BACKGROUND_CLOUD_COUNT; i++) {
-        bg->clouds[i].pos.x += BACKGROUND_CLOUD_SPEED * dt;
+        Cloud* cloud = &bg->clouds[i];
+        cloud->pos.x += BACKGROUND_CLOUD_SPEED * dt;
+
+        if (cloud->pos.x < -context->gameWidth) {
+            cloud->pos.x = context->gameWidth;
+        }
+        else if (cloud->pos.x > context->gameWidth * 2) {
+            cloud->pos.x = -context->gameWidth;
+        }
     }
 }
 
