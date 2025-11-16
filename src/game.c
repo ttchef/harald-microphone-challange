@@ -19,7 +19,7 @@ typedef struct PlayerSpriteAnimationInfo {
     int32_t length;
 } PlayerSpriteAnimationInfo;
 
-const PlayerSpriteAnimationInfo playerSpriteAnimationInfo[PLAYER_ANIM_STTE_NUM] = {
+const PlayerSpriteAnimationInfo playerSpriteAnimationInfo[PLAYER_ANIM_STATE_NUM] = {
     {{0, 0,}, 6},
     {{0, 1}, 9},
     {{3, 2}, 10},
@@ -258,6 +258,9 @@ static void handleInput(Context* context) {
     }
     if (IsKeyPressed(KEY_C)) {
         context->gameData.player.animState++;
+        if (context->gameData.player.animState >= PLAYER_ANIM_STATE_NUM) {
+            context->gameData.player.animState = 0;
+        }
     }
     if (IsKeyPressed(KEY_D)) {
         context->debugMode = !context->debugMode;

@@ -29,7 +29,7 @@ typedef enum PlayerAnimationState {
     PLAYER_ANIM_STATE_PUNCH,
     PLAYER_ANIM_STATE_JUMP,
     PLAYER_ANIM_STATE_DEATH,
-    PLAYER_ANIM_STTE_NUM
+    PLAYER_ANIM_STATE_NUM
 } PlayerAnimationState;
 
 typedef struct Player {
