@@ -55,7 +55,7 @@ void renderGame(Context *context) {
 
 void renderGameNoCamera(Context *context) {
     GameData* game = &context->gameData;
-    renderBackground(&game->bg, context);
+    renderBackground(context, &game->bg);
     //DrawRectangleGradientV(0, 0, context->gameWidth, context->windowHeight, BLUE, SKYBLUE);
     //DrawTexture(LoadTexture("res/PirateBomb/Sprites/7-Objects/1-BOMB/2-Bomb On/1.png"), 300, 300, WHITE);
 }

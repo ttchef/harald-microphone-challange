@@ -12,7 +12,7 @@
 
 void initGame(Context *context) {
     GameData* data = &context->gameData;
-    initBackground(&data->bg);
+    initBackground(context, &data->bg);
     data->groundY = context->windowHeight * 0.9f;
 
     // Player
@@ -23,7 +23,7 @@ void initGame(Context *context) {
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
     data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){250, 500}, (Vector2){250, 30}};
     data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
-
+    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){100, 400}, (Vector2){250, 30}};
 }
 
 static void spawnRandomObstacle(Context* context) {
