@@ -17,6 +17,16 @@ static void debugRenderPlayerHitbox(Context* context, Player* p) {
     DrawRectangleLines(p->pos.x + p->hitboxOrigin.x, p->pos.y + p->hitboxOrigin.y, p->hitbox.x, p->hitbox.y, GREEN);
 }
 
+static void renderGround(Context* context) {
+    GameData* game = &context->gameData;
+
+    int32_t drawCount = (context->gameWidth * 4) / game->groundTex.width * GROUND_SCALE;
+    DrawRectangle(-context->gameWidth * 2, game->groundY, context->gameWidth * 5, context->windowHeight * 0.4f, (Color){33, 25, 25, 255}); // Color of last pixel from ground tex
+    for (int32_t i = -context->gameWidth * 2; i < context->gameWidth * 3; i += game->groundTex.width * GROUND_SCALE) {
+        DrawTextureEx(game->groundTex, (Vector2){i, game->groundY - game->groundTex.height * GROUND_SCALE + 17 * GROUND_SCALE}, 0, GROUND_SCALE, WHITE);
+    }
+}
+
 static void renderPlayer(Player* p) {
     Vector2 origin = {0};
 
@@ -39,8 +49,7 @@ static void renderPlayer(Player* p) {
 
 void renderGame(Context *context) {
     GameData* game = &context->gameData;
-    DrawRectangleGradientV(-context->gameWidth, context->gameData.groundY,
-                           context->gameWidth * 4, context->windowHeight - game->groundY + context->camera.target.y / 2.2, GREEN, DARKGREEN);
+    renderGround(context);
 
     // Obstacles
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
@@ -56,6 +65,7 @@ void renderGame(Context *context) {
      
         switch (coll->type) {
             case COLLIDER_TYPE_RECTANGLE:
+            case COLLIDER_TYPE_ONE_WAY_PLATFORM:
                 DrawRectangle(coll->pos.x, coll->pos.y, coll->dim.x, coll->dim.y, DARKGRAY);
                 break;
         }

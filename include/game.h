@@ -14,6 +14,7 @@
 #define PLAYER_VOLUME_VELO_FACTOR (1.3)
 #define PLAYER_JUMP_THRESHOLD (180)
 #define PLAYER_SCALE (3)
+#define GROUND_SCALE (4)
 #define GAME_GRAVITY (800.0f)
 #define GROUND_FRICTION (15.0f)
 #define GAME_MAX_OBSTACLES 20
@@ -65,6 +66,7 @@ typedef struct Obstacle {
 typedef struct GameData {
     Background bg;
     int32_t groundY;
+    Texture2D groundTex;
     Player player;
     Player player2;
     Obstacle obstacles[GAME_MAX_OBSTACLES];

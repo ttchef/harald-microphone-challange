@@ -29,31 +29,44 @@ const PlayerSpriteAnimationInfo playerSpriteAnimationInfo[PLAYER_ANIM_STATE_NUM]
 
 static void initPlatforms(Context* context) {
     GameData* game = &context->gameData;
-    int32_t currentY = game->groundY - 150;
+
+    float minX = 50;
+    float maxX = context->gameWidth - 300;
+
+    int32_t currentY = game->groundY;
+
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
         Collider* c = &game->colliders[i];
         c->isActive = true;
-        c->type = COLLIDER_TYPE_RECTANGLE;
-        c->dim = (Vector2){250, 30};
+        c->type = COLLIDER_TYPE_ONE_WAY_PLATFORM;
 
-        if (i != 0) {
-            int32_t randX = GetRandomValue(150, 350);
-            int32_t neg = i % 3 == 0 ? 1 : -1;
-            c->pos.x = game->colliders[i - 1].pos.x + (randX * neg);
-        }
-        else {
+        // Random width for variation
+        c->dim = (Vector2){ GetRandomValue(150, 300), 30 };
+
+        if (i == 0) {
             c->pos.x = game->player.pos.x;
-        }
-        c->pos.y = currentY;
+        } 
+        else {
+            int shift = GetRandomValue(80, 240);
 
-        currentY -= 120;
+            int neg = (GetRandomValue(0, 100) < 50) ? 1 : -1;
+
+            float newX = game->colliders[i - 1].pos.x + shift * neg;
+
+            c->pos.x = Clamp(newX, minX, maxX);
+        }
+
+        currentY -= GetRandomValue(90, 150);
+        c->pos.y = currentY;
     }
 }
+
 
 void initGame(Context *context) {
     GameData* data = &context->gameData;
     initBackground(context, &data->bg);
     data->groundY = context->windowHeight * 0.9f;
+    data->groundTex = LoadTexture("res/erik/ground.png");
 
     // Player
     data->player.texture = LoadTexture("res/StickmanPack-V0.2/StickmanPack/Full/Full.png");
@@ -321,5 +334,6 @@ void deinitGame(Context *context) {
 
     UnloadTexture(game->player.texture);
     UnloadTexture(game->player2.texture);
+    UnloadTexture(game->groundTex);
 }
 

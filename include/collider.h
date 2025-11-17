@@ -6,6 +6,7 @@
 
 typedef enum ColliderType {
     COLLIDER_TYPE_RECTANGLE,
+    COLLIDER_TYPE_ONE_WAY_PLATFORM,
 } ColliderType;
 
 typedef struct Collider {
