@@ -27,6 +27,29 @@ const PlayerSpriteAnimationInfo playerSpriteAnimationInfo[PLAYER_ANIM_STATE_NUM]
     {{4, 4}, 8},
 };
 
+static void initPlatforms(Context* context) {
+    GameData* game = &context->gameData;
+    int32_t currentY = game->groundY - 150;
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        Collider* c = &game->colliders[i];
+        c->isActive = true;
+        c->type = COLLIDER_TYPE_RECTANGLE;
+        c->dim = (Vector2){250, 30};
+
+        if (i != 0) {
+            int32_t randX = GetRandomValue(150, 350);
+            int32_t neg = i % 3 == 0 ? 1 : -1;
+            c->pos.x = game->colliders[i - 1].pos.x + (randX * neg);
+        }
+        else {
+            c->pos.x = game->player.pos.x;
+        }
+        c->pos.y = currentY;
+
+        currentY -= 120;
+    }
+}
+
 void initGame(Context *context) {
     GameData* data = &context->gameData;
     initBackground(context, &data->bg);
@@ -52,9 +75,7 @@ void initGame(Context *context) {
 
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
-    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
-    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){200, 500}, (Vector2){250, 30}};
-    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){0, 300}, (Vector2){250, 30}};
+    initPlatforms(context);
 }
 
 static void spawnRandomObstacle(Context* context) {
