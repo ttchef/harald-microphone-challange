@@ -42,7 +42,7 @@ void initGame(Context *context) {
     data->player.pos = (Vector2){context->windowWidth * 0.2f, context->windowHeight * 0.5f};
     data->player.dim = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE, PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE};
     data->player.hitbox = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE / 3.0f * PLAYER_SCALE, PLAYER_SPRITESHEET_GRIDSIZE * 0.8f * PLAYER_SCALE};
-    data->player.hitboxOrigin = (Vector2){PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE / 3.5f, PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE * 0.15f};
+    data->player.hitboxOrigin = (Vector2){ (PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE) * 0.3f, PLAYER_SPRITESHEET_GRIDSIZE * PLAYER_SCALE * 0.15f};
     data->player.direction = PLAYER_DIRECTION_RIGHT;
 
     // Player 2
@@ -52,9 +52,9 @@ void initGame(Context *context) {
 
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
-    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 500}, (Vector2){250, 30}};
-    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){200, 300}, (Vector2){250, 30}};
-    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){0, 100}, (Vector2){250, 30}};
+    data->colliders[0] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){400, 600}, (Vector2){250, 30}};
+    data->colliders[1] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){200, 500}, (Vector2){250, 30}};
+    data->colliders[2] = (Collider){true, COLLIDER_TYPE_RECTANGLE, (Vector2){0, 300}, (Vector2){250, 30}};
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -239,10 +239,12 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     if (p->vel.x < -15.0f) {
         p->direction = PLAYER_DIRECTION_LEFT;
     } 
-    else if (p->vel.x > 15.0f) p->direction = PLAYER_DIRECTION_RIGHT;
+    else if (p->vel.x > 15.0f) {
+        p->direction = PLAYER_DIRECTION_RIGHT;
+    }
 
     // Change Animation State
-    if (p->isJumping && p->vel.y < -30.0f) p->animState = PLAYER_ANIM_STATE_JUMP;
+    if (p->isJumping && (p->vel.y < -30.0f || p->vel.y > 30.0f)) p->animState = PLAYER_ANIM_STATE_JUMP;
     else if (p->onGround) {
         if (p->vel.x < 30.0f && p->vel.x > -30.0f) p->animState = PLAYER_ANIM_STATE_IDLE;
         else p->animState = PLAYER_ANIM_STATE_RUN;

@@ -31,6 +31,7 @@ static void renderPlayer(Player* p) {
 
     if (p->direction == PLAYER_DIRECTION_LEFT) {
         srcRec.width = -srcRec.width;
+        destRec.x -= 10;
     }
 
     DrawTexturePro(p->texture, srcRec, destRec, origin, 0.0f, WHITE);
