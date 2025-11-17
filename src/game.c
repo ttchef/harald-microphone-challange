@@ -147,6 +147,7 @@ static void applyPlayerRopeConstraing(Context* context) {
 static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) {
     GameData* gameData = &context->gameData;
     Player* p = playerId == PLAYER_1 ? &gameData->player : &gameData->player2;
+    p->oldPos = p->pos;
 
     // Update Texture
     p->frameCounter++;
@@ -217,8 +218,9 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     // Check collider collisios
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
         if (!gameData->colliders[i].isActive) continue;
-        
+
         Collider* coll = &gameData->colliders[i];
+        if (coll->type == COLLIDER_TYPE_ONE_WAY_PLATFORM) continue;
         if (checkAABBPlayer(coll, p)) {
             if (p->vel.x > 0) 
                 p->pos.x = coll->pos.x - p->hitbox.x - p->hitboxOrigin.x;

@@ -39,6 +39,7 @@ typedef struct Player {
     float volPeak;
     float strengthCooldown;
     float pitchFiltered;
+    Vector2 oldPos;
     Vector2 pos;
     Vector2 vel;
     Vector2 acc;
