@@ -29,6 +29,9 @@ $(BUILD_DIR):
 run: clean $(TARGET)
 	./$(TARGET)
 
+cloc:
+	cloc . --exclude-dir=vendor,build,third_party,bin,compile_commands.json
+
 clean:
 	rm -rf $(BUILD_DIR)
 

@@ -27,6 +27,19 @@ static void renderGround(Context* context) {
     }
 }
 
+static void renderPlatforms(Context* context) {
+    GameData* game = &context->gameData;
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!game->platforms[i].isActive) continue;
+        Platform* p = &game->platforms[i];
+        Collider* c = &p->collider;
+     
+        DrawTextureEx(p->middle, (Vector2){c->pos.x + p->left.width * PLATFORM_SCALE, c->pos.y}, 0, PLATFORM_SCALE, WHITE);
+        DrawTextureEx(p->left, (Vector2){c->pos.x, c->pos.y}, 0, PLATFORM_SCALE, WHITE);
+        DrawTextureEx(p->right, (Vector2){c->pos.x - 2 + (p->left.width + p->middle.width) * PLATFORM_SCALE, c->pos.y}, 0, PLATFORM_SCALE, WHITE);
+    }
+}
+
 static void renderPlayer(Player* p) {
     Vector2 origin = {0};
 
@@ -59,17 +72,7 @@ void renderGame(Context *context) {
     }
 
     // Colliders
-    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
-        if (!game->colliders[i].isActive) continue;
-        Collider* coll = &game->colliders[i];
-     
-        switch (coll->type) {
-            case COLLIDER_TYPE_RECTANGLE:
-            case COLLIDER_TYPE_ONE_WAY_PLATFORM:
-                DrawRectangle(coll->pos.x, coll->pos.y, coll->dim.x, coll->dim.y, DARKGRAY);
-                break;
-        }
-    }
+    renderPlatforms(context);
 
     renderPlayer(&game->player);
     if (context->isMultiplayer) {

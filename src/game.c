@@ -36,8 +36,9 @@ static void initPlatforms(Context* context) {
     int32_t currentY = game->groundY;
 
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
-        Collider* c = &game->colliders[i];
-        c->isActive = true;
+        Platform* p = &game->platforms[i];
+        Collider* c = &p->collider;
+        p->isActive = true;
         c->type = COLLIDER_TYPE_ONE_WAY_PLATFORM;
 
         // Random width for variation
@@ -51,13 +52,18 @@ static void initPlatforms(Context* context) {
 
             int neg = (GetRandomValue(0, 100) < 50) ? 1 : -1;
 
-            float newX = game->colliders[i - 1].pos.x + shift * neg;
+            float newX = game->platforms[i - 1].collider.pos.x + shift * neg;
 
             c->pos.x = Clamp(newX, minX, maxX);
         }
 
         currentY -= GetRandomValue(90, 150);
         c->pos.y = currentY;
+
+        // Textures
+        p->left = LoadTexture("res/erik/platform/left.png");
+        p->right = LoadTexture("res/erik/platform/right.png");
+        p->middle = LoadTexture("res/erik/platform/middle.png");
     }
 }
 
@@ -85,7 +91,6 @@ void initGame(Context *context) {
     memcpy(&data->player2, &data->player, sizeof(Player));
     data->player2.texture = LoadTexture("res/StickmanPack-V0.2/StickmanPack/Full/Full.png");
     data->player2.accentColor = PINK;
-
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
     initPlatforms(context);
@@ -217,9 +222,9 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
 
     // Check collider collisios
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
-        if (!gameData->colliders[i].isActive) continue;
+        if (!gameData->platforms[i].isActive) continue;
 
-        Collider* coll = &gameData->colliders[i];
+        Collider* coll = &gameData->platforms[i].collider;
         if (coll->type == COLLIDER_TYPE_ONE_WAY_PLATFORM) continue;
         if (checkAABBPlayer(coll, p)) {
             if (p->vel.x > 0) 
@@ -232,9 +237,9 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     p->pos.y += p->vel.y * dt;
 
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
-        if (!gameData->colliders[i].isActive) continue;
+        if (!gameData->platforms[i].isActive) continue;
         
-        Collider* coll = &gameData->colliders[i];
+        Collider* coll = &gameData->platforms[i].collider;
         if (checkAABBPlayer(coll, p)) {
             if (p->vel.y > 0) { 
                 p->pos.y = coll->pos.y - p->hitbox.y - p->hitboxOrigin.y;
@@ -333,6 +338,12 @@ void updateGame(Context *context, float dt) {
 void deinitGame(Context *context) {
     GameData* game = &context->gameData;
     deinitBackground(&game->bg);
+
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        UnloadTexture(game->platforms[i].left);
+        UnloadTexture(game->platforms[i].right);
+        UnloadTexture(game->platforms[i].middle);
+    }
 
     UnloadTexture(game->player.texture);
     UnloadTexture(game->player2.texture);

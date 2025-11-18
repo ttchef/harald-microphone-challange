@@ -15,6 +15,7 @@
 #define PLAYER_JUMP_THRESHOLD (180)
 #define PLAYER_SCALE (3)
 #define GROUND_SCALE (4)
+#define PLATFORM_SCALE (2)
 #define GAME_GRAVITY (800.0f)
 #define GROUND_FRICTION (15.0f)
 #define GAME_MAX_OBSTACLES 20
@@ -58,6 +59,14 @@ typedef struct Player {
     PlayerAnimationState animState;
 } Player;
 
+typedef struct Platform {
+    bool isActive;
+    Collider collider;
+    Texture2D middle;
+    Texture2D left;
+    Texture2D right;
+} Platform;
+
 typedef struct Obstacle {
     bool isActive;
     Vector2 pos;
@@ -71,7 +80,7 @@ typedef struct GameData {
     Player player;
     Player player2;
     Obstacle obstacles[GAME_MAX_OBSTACLES];
-    Collider colliders[GAME_MAX_OBSTACLES];
+    Platform platforms[GAME_MAX_OBSTACLES];
     Rope rope;
 } GameData;
 

@@ -10,7 +10,6 @@ typedef enum ColliderType {
 } ColliderType;
 
 typedef struct Collider {
-    bool isActive;
     ColliderType type;
     Vector2 pos;
     Vector2 dim;
