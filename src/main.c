@@ -20,6 +20,7 @@ int main() {
     };
     
     InitWindow(context.windowWidth, context.windowHeight, "Audio");
+    GuiLoadStyle("vendor/raygui/styles/jungle/style_jungle.rgs");
     SetTargetFPS(60);
     initAudio(&context);
     initGame(&context);

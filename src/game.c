@@ -181,8 +181,9 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     pitch = p->pitchFiltered;
 
     int32_t volume;
-    if (playerId == PLAYER_1) volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL));
-    else if (playerId == PLAYER_2) volume = fmaxf(atomic_load(&context->dataP2.volR), atomic_load(&context->dataP2.volL));
+    if (playerId == PLAYER_1) volume = fmaxf(atomic_load(&context->data.volR), atomic_load(&context->data.volL)) * context->volumeMul;
+    else if (playerId == PLAYER_2) volume = fmaxf(atomic_load(&context->dataP2.volR), atomic_load(&context->dataP2.volL)) * context->volumeMulP2;
+    if (volume > 400) volume = 400;
 
     if (volume > PLAYER_JUMP_THRESHOLD && p->onGround) {
         p->vel.y = -volume * PLAYER_VOLUME_VELO_FACTOR;

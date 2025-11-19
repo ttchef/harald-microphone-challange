@@ -23,6 +23,8 @@ typedef struct Context {
     AudioDevice* devices;
     int32_t activeDevice;
     int32_t activeDeviceP2;
+    float volumeMul;
+    float volumeMulP2;
 
     // Game
     GameData gameData;

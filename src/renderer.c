@@ -109,6 +109,11 @@ void renderGuiSinglePlayer(Context* context) {
     currentY += buttonHeight + paddingY;
     active = first ? context->activeDevice : active;
 
+    Rectangle sliderBounds = bounds;
+    sliderBounds.y = currentY;
+    GuiSlider(sliderBounds, "", "", &context->volumeMul, 1, 2);
+    currentY += buttonHeight + paddingY;
+
     // Multiplayer text
     const char* text = TextFormat("Multiplayer: %s\n", context->isMultiplayer ? "on " : "off");
     int32_t fontSize = 20;
@@ -130,8 +135,9 @@ void renderGuiSinglePlayer(Context* context) {
     // Draw Audio Background
     int32_t maxHeight = 500;
     DrawRectangle(startX, currentY, elementWidth, maxHeight, BLACK);
-    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight - paddingY * 2);
+    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight - paddingY * 2) * context->volumeMul;
     volume = volume <= 10 ? 0 : volume;
+    if (volume > 400) volume = 400;
 
     int32_t barX = startX + elementWidth / 4;
     int32_t barW = elementWidth / 2;
@@ -182,12 +188,22 @@ void renderGuiMultiplayer(Context* context) {
     currentY += buttonHeight + paddingY;
     active = first ? context->activeDevice : active;
 
+    Rectangle sliderBounds = bounds;
+    sliderBounds.y = currentY;
+    GuiSlider(sliderBounds, "", "", &context->volumeMul, 1, 5);
+    currentY += buttonHeight + paddingY;
+
     Rectangle bounds3 = { .x = startX, .y = currentY, .width = elementWidth, .height = buttonHeight };
     static int32_t active2 = 0;
     static int32_t oldActive2 = 0;
     static bool editMode2 = false;
     currentY += buttonHeight + paddingY;
     active2 = first ? context->activeDevice : active2;
+
+    sliderBounds = bounds;
+    sliderBounds.y = currentY;
+    GuiSlider(sliderBounds, "", "", &context->volumeMulP2, 1, 5);
+    currentY += buttonHeight + paddingY;
 
     // Multiplayer text
     const char* text = TextFormat("Multiplayer: %s\n", context->isMultiplayer ? "on " : "off");
@@ -210,11 +226,13 @@ void renderGuiMultiplayer(Context* context) {
     // Draw Audio Background
     int32_t maxHeight = 500;
     DrawRectangle(startX, currentY, elementWidth, maxHeight, BLACK);
-    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight - paddingY * 2);
+    int32_t volume = fmin(fmax(atomic_load(&context->data.volL), atomic_load(&context->data.volR)), maxHeight - paddingY * 2) * context->volumeMul;
     volume = volume <= 10 ? 0 : volume;
+    if (volume > 400) volume = 400;
 
-    int32_t volumeP2 = fmin(fmax(atomic_load(&context->dataP2.volL), atomic_load(&context->dataP2.volR)), maxHeight - paddingY * 2);
+    int32_t volumeP2 = fmin(fmax(atomic_load(&context->dataP2.volL), atomic_load(&context->dataP2.volR)), maxHeight - paddingY * 2) * context->volumeMulP2;
     volumeP2 = volumeP2 <= 10 ? 0 : volumeP2;
+    if (volumeP2 > 400) volumeP2 = 400;
 
     int32_t barX = startX + elementWidth / 8;
     int32_t barW = elementWidth / 4 + paddingX;
