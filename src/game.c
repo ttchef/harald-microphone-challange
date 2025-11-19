@@ -41,9 +41,6 @@ static void initPlatforms(Context* context) {
         p->isActive = true;
         c->type = COLLIDER_TYPE_ONE_WAY_PLATFORM;
 
-        // Random width for variation
-        c->dim = (Vector2){ GetRandomValue(150, 300), 30 };
-
         if (i == 0) {
             c->pos.x = game->player.pos.x;
         } 
@@ -64,6 +61,9 @@ static void initPlatforms(Context* context) {
         p->left = LoadTexture("res/erik/platform/left.png");
         p->right = LoadTexture("res/erik/platform/right.png");
         p->middle = LoadTexture("res/erik/platform/middle.png");
+
+        c->dim.x = (p->left.width + p->middle.width + p->right.width) * PLATFORM_SCALE;
+        c->dim.y = p->middle.height * PLATFORM_SCALE;
     }
 }
 

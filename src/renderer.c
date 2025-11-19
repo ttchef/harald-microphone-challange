@@ -17,6 +17,16 @@ static void debugRenderPlayerHitbox(Context* context, Player* p) {
     DrawRectangleLines(p->pos.x + p->hitboxOrigin.x, p->pos.y + p->hitboxOrigin.y, p->hitbox.x, p->hitbox.y, GREEN);
 }
 
+static void debugRenderPlatformHitbox(Context* context) {
+    GameData* game = &context->gameData;
+    for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {
+        if (!game->platforms[i].isActive) continue;
+        Platform* p = &game->platforms[i];
+        Collider* c = &p->collider;
+        DrawRectangleLines(c->pos.x, c->pos.y, c->dim.x, c->dim.y, GREEN);
+    }
+}
+
 static void renderGround(Context* context) {
     GameData* game = &context->gameData;
 
@@ -80,7 +90,10 @@ void renderGame(Context *context) {
         drawRope(&game->rope);
     }
 
-    if (context->debugMode) debugRenderPlayerHitbox(context, &game->player);
+    if (context->debugMode) {
+        debugRenderPlayerHitbox(context, &game->player);
+        debugRenderPlatformHitbox(context);
+    }     
     if (context->debugMode && context->isMultiplayer)  debugRenderPlayerHitbox(context, &game->player2);
 }
 
