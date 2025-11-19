@@ -82,6 +82,8 @@ typedef struct GameData {
     Obstacle obstacles[GAME_MAX_OBSTACLES];
     Platform platforms[GAME_MAX_OBSTACLES];
     Rope rope;
+    int32_t maxHeight;
+    int32_t height;
 } GameData;
 
 struct Context;

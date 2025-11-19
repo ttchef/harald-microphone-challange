@@ -67,7 +67,6 @@ static void initPlatforms(Context* context) {
     }
 }
 
-
 void initGame(Context *context) {
     GameData* data = &context->gameData;
     initBackground(context, &data->bg);
@@ -252,7 +251,6 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
         }
     }
 
-
     // Ground Collision
     if (p->pos.y + p->hitboxOrigin.y + p->hitbox.y > gameData->groundY && p->vel.y > 0) {
         p->pos.y = gameData->groundY - p->hitboxOrigin.y - p->hitbox.y;
@@ -334,6 +332,11 @@ void updateGame(Context *context, float dt) {
     // Camera
     context->camera.target = game->player.pos;
     context->camera.offset = (Vector2){context->gameWidth * 0.5f - game->player.dim.x / 2, context->windowHeight * 0.5f};
+
+    // Sets height
+    game->height = -(game->player.pos.y - game->groundY);
+    if (context->isMultiplayer && -(game->player2.pos.y - game->groundY) > game->height) game->height = -(game->player2.pos.y - game->groundY);
+    if (game->height > game->maxHeight) game->maxHeight = game->height;
 }
 
 void deinitGame(Context *context) {

@@ -169,6 +169,15 @@ void renderGuiSinglePlayer(Context* context) {
         oldActive = active;
     }
     first = false;
+
+
+    // Overlap with game
+    startX = context->guiOffset - paddingX - elementWidth;
+    currentY = paddingY;
+    DrawText(TextFormat("Highscore: %d", context->gameData.maxHeight), startX, currentY, 20, RAYWHITE);
+    currentY += paddingY + 20;
+    DrawText(TextFormat("Height: %d", context->gameData.height), startX, currentY, 20, RAYWHITE);
+    currentY += paddingY + 20;
 }          
 
 void renderGuiMultiplayer(Context* context) {
