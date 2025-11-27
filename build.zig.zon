@@ -1,0 +1,29 @@
+.{
+    .name = .harald_microphone_challange,
+    .version = "0.0.0",
+    .fingerprint = 0xba65fee431f54f09,
+    .minimum_zig_version = "0.16.0-dev.1240+b2895f356",
+    .dependencies = .{
+        .raylib = .{
+            .url = "git+https://github.com/raysan5/raylib/#470a3265882968b624f475f3c9f349be962adc43",
+            .hash = "raylib-5.6.0-dev-whq8uAOKBAXin9SAueSQRAvXQqKjzN5Q6rDa5VWSw4j6",
+        },
+        .raygui = .{
+            .url = "git+https://github.com/raysan5/raygui#ff4dbd07124f2e5f65657601464d33ac48a63ec0",
+            .hash = "N-V-__8AAIIcbwBZoLOnjV3nv8JDG9QTALv4wJh-w8Ye2Ws-",
+        },
+        .portaudio = .{
+            .url = "git+https://github.com/allyourcodebase/portaudio#9ebdee1dbcbb02e4f65c57f67028ee23e84b1ea2",
+            .hash = "portaudio-19.7.0-2-Wv4wb8IrAAA3nebRbuallsoerxEHkOdyCwouQlxPKumz",
+        },
+        .portaudio_headers = .{
+            .url = "git+https://github.com/PortAudio/portaudio/#7786be7f5f2f8f908ec66d1dc3ab8f3e61562f9f",
+            .hash = "N-V-__8AAEl6cgCAsaSD39-JQM5biz0jec_iug5HEXuvWF2t",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
