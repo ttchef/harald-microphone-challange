@@ -8,6 +8,9 @@
 #define MIC_CHAR_COUNT 2056
 
 typedef struct Context {
+    // System 
+    float deltaTime;
+
     // Window
     const int32_t windowWidth;
     const int32_t windowHeight;

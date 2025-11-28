@@ -53,7 +53,7 @@ void* _darray_pop_at(void* array, uint64_t index, void* dest);
     }                            \
 
 #define darrayPop(array, valuePtr) \
-    _darray_pop(array, value_ptr); 
+    _darray_pop(array, valuePtr); 
 
 #define darrayInsertAt(array, index, value) \
     { \
@@ -62,7 +62,7 @@ void* _darray_pop_at(void* array, uint64_t index, void* dest);
     } \
 
 #define darrayPopAt(array, index, valuePtr) \
-    _darray_pop_at(array, index, value_ptr)
+    _darray_pop_at(array, index, valuePtr)
 
 #define darrayClear(array) \
     _darray_field_set(array, DARRAY_LENGTH, 0)

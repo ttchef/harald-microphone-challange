@@ -10,6 +10,7 @@
 #include <stdatomic.h>
 
 #include <raylib.h>
+#include "particle.h"
 #include "raygui.h"
 
 static void debugRenderPlayerHitbox(Context* context, Player* p) {
@@ -73,6 +74,7 @@ static void renderPlayer(Player* p) {
 void renderGame(Context *context) {
     GameData* game = &context->gameData;
     renderGround(context);
+    drawParticleSystem(context);
 
     // Obstacles
     for (int32_t i = 0; i < GAME_MAX_OBSTACLES; i++) {

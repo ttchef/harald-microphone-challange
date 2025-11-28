@@ -1,6 +1,7 @@
 
 #include "background.h"
 #include "collider.h"
+#include "particle.h"
 #include <game.h>
 #include <context.h>
 #include <audio.h>
@@ -93,6 +94,21 @@ void initGame(Context *context) {
 
     createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
     initPlatforms(context);
+
+    initParticleSystem(context);
+
+    ParticleCreateInfo particleCreateInfo = {
+        .lifetime = 2.0f,
+        .dim = (Vector2){10.0f, 10.0f},
+    };
+
+    EmitterCreateInfo emitterCreateInfo = {
+        .pos = data->player.pos,
+        .lifetime = 10.0f,
+        .spawnRate = 10.0f,
+        .particleCreateInfo = particleCreateInfo,
+    };
+    createParticleEmitter(context, &emitterCreateInfo);
 }
 
 static void spawnRandomObstacle(Context* context) {
@@ -316,6 +332,7 @@ void updateGame(Context *context, float dt) {
     updatePlayer(context, dt, PLAYER_1);
     updateObstacles(context, dt);
     updateBackround(context, &game->bg, dt);
+    updateParticleSystem(context);
 
     if (context->isMultiplayer) {
         updatePlayer(context, dt, PLAYER_2);

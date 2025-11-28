@@ -64,9 +64,9 @@ void _darray_pop(void *array, void *dest) {
     uint64_t length = darrayLength(array);
     uint64_t stride = darrayStride(array);
 
-    uint64_t addr = (uint64_t)addr;
+    uint64_t addr = (uint64_t)array;
     addr += (length - 1) * stride;
-    memcpy(dest, (void*)addr, stride);
+    if (dest) memcpy(dest, (void*)addr, stride);
 
     _darray_field_set(array, DARRAY_LENGTH, length - 1);
 }
@@ -74,6 +74,8 @@ void _darray_pop(void *array, void *dest) {
 void* _darray_insert_at(void *array, uint64_t index, const void* valuePtr) {
     uint64_t length = darrayLength(array);
     uint64_t stride = darrayStride(array);
+
+    if (index == length) return _darray_push(array, valuePtr);
 
     if (index >= length) {
         fprintf(stderr, "Index out of bounds for this array!\n Length: %lu, Index: %lu", length, index);
@@ -87,10 +89,10 @@ void* _darray_insert_at(void *array, uint64_t index, const void* valuePtr) {
     uint64_t addr = (uint64_t)array;
     
     if (index != length - 1) {
-        memcpy(
+        memmove(
             (void*)(addr + ((index + 1) * stride)),
             (void*)(addr + (index * stride)),
-            stride * (length - index)
+            stride * (length - index - 1)
         );
     }
     memcpy((void*)(addr + (index * stride)), valuePtr, stride);
@@ -103,19 +105,25 @@ void* _darray_pop_at(void *array, uint64_t index, void *dest) {
     uint64_t length = darrayLength(array);
     uint64_t stride = darrayStride(array);
 
+    if (index == length) {
+        _darray_pop(array, dest);
+        return array;
+    } 
+
     if (index >= length) {
         fprintf(stderr, "Index out of bounds for this array!\n Length: %lu, Index: %lu", length, index);
         return array;
     }
 
-    uint64_t addr = (uint64_t)addr;
-    memcpy(dest, (void*)(addr + (index * stride)), stride);
+    uint64_t addr = (uint64_t)array;
+
+    if (dest) memcpy(dest, (void*)(addr + (index * stride)), stride);
 
     if (index != length - 1) {
-        memcpy(
+        memmove(
             (void*)(addr + (index * stride)),
             (void*)(addr + ((index + 1) * stride)),
-            stride * (length - index)
+            stride * (length - index - 1)
         );
     }
 

@@ -26,7 +26,8 @@ int main() {
     initGame(&context);
 
     while (!WindowShouldClose()) {
-        updateGame(&context, GetFrameTime());
+        context.deltaTime = GetFrameTime();
+        updateGame(&context, context.deltaTime);
         BeginDrawing();
             ClearBackground(BLACK);
 
