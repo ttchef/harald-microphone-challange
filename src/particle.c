@@ -29,7 +29,6 @@ Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCrea
     Particle p = {
         .dim = particleCreateInfo->dim,
         .lifetime = particleCreateInfo->lifetime,
-        .isActive = true,
     };
 
     Vector2 pos;
@@ -64,14 +63,10 @@ void updateParticleSystem(struct Context *context) {
             p->pos.y -= 30.0f * context->deltaTime;
 
             if (p->lifetime <= 0.0f) {
-                p->isActive = false;
+                emitter->particles = darrayPopAt(emitter->particles, j, NULL);
             }
             p->lifetime -= context->deltaTime;
-
-            if (!p->isActive) {
-                emitter->particles = darrayPopAt(emitter->particles, j, NULL);
-                j--; // Decrement j to account for the removed element
-            }
+     
         }
     }
 }
@@ -83,7 +78,6 @@ void drawParticleSystem(struct Context *context) {
  
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
-            if (!p->isActive) continue;
             DrawRectangle(p->pos.x, p->pos.y, p->dim.x, p->dim.y, WHITE);
         }
     }

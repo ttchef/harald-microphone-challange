@@ -21,6 +21,7 @@ typedef struct EmitterCreateInfo {
     Vector2 pos;
     float lifetime;
     float spawnRate;
+    float gravity;
     ParticleCreateInfo particleCreateInfo;
 } EmitterCreateInfo;
 
