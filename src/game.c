@@ -99,17 +99,17 @@ void initGame(Context *context) {
     initParticleSystem(context);
 
     ParticleCreateInfo particleCreateInfo = {
-        .lifetime = 100.0f,
+        .lifetime = 0.7f,
         .dim = (Vector2){10.0f, 10.0f},
         .color = RED,
     };
 
     EmitterCreateInfo emitterCreateInfo = {
         .pos =  Vector2Add(data->player.hitbox, Vector2Subtract(data->player.hitboxOrigin, data->player.pos)),
-        //.pos = data->player.pos,
+        .particleTexture = "res/circle.png",
         .lifetime = 10.0f,
         .infinite = true,
-        .spawnRate = 10.0f,
+        .spawnRate = 20.0f,
         .gravity = -300.0f,
         .particleCreateInfo = particleCreateInfo,
     };

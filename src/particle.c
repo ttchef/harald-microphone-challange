@@ -20,6 +20,7 @@ void createParticleEmitter(struct Context* context, EmitterCreateInfo* emitterCr
         .spawnRate = cr.spawnRate,
         .gravity = cr.gravity,
         .infinite = cr.infinite,
+        .particleTexture = LoadTexture(cr.particleTexture),
         .particleCreateInfo = cr.particleCreateInfo,
     };
 
@@ -83,7 +84,20 @@ void drawParticleSystem(struct Context *context) {
  
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
-            DrawRectangle(p->pos.x, p->pos.y, p->dim.x, p->dim.y, p->color);
+            Rectangle src = {
+                .x = 0,
+                .y = 0,
+                .width = emitter->particleTexture.width,
+                .height = emitter->particleTexture.height,
+            };
+            Rectangle dest = {
+                .x = p->pos.x,
+                .y = p->pos.y,
+                .width = p->dim.x,
+                .height = p->dim.y
+            };
+            Color c = (Color){255, 255, 255, p->lifetime * 255};
+            DrawTexturePro(emitter->particleTexture, src, dest, (Vector2){0, 0}, 0.0f, c);
         }
     }
 }
