@@ -37,8 +37,10 @@ Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCrea
     };
 
     Vector2 pos;
-    pos.x = GetRandomValue(emitter->pos.x - 30, emitter->pos.x + 30);
-    pos.y = GetRandomValue(emitter->pos.y - 30, emitter->pos.y + 30);
+    pos.x = GetRandomValue(emitter->pos.x + particleCreateInfo->dim.x / 2 - 30,
+                           emitter->pos.x + particleCreateInfo->dim.x / 2 + 30);
+    pos.y = GetRandomValue(emitter->pos.y + particleCreateInfo->dim.y / 2 - 30,
+                           emitter->pos.y + particleCreateInfo->dim.y + 30);
     p.pos = pos;
 
     return p;

@@ -6,6 +6,7 @@
 #include <collider.h>
 #include <background.h>
 #include <particle.h>
+#include <light.h>
 
 #include <stdint.h>
 #include <raylib.h>
@@ -86,6 +87,7 @@ typedef struct GameData {
     int32_t maxHeight;
     int32_t height;
     ParticleSystem particleSystem;
+    LighSystem lightSystem;
 } GameData;
 
 struct Context;

@@ -109,7 +109,7 @@ void initGame(Context *context) {
         .particleTexture = "res/circle.png",
         .lifetime = 10.0f,
         .infinite = true,
-        .spawnRate = 20.0f,
+        .spawnRate = 30.0f,
         .gravity = -300.0f,
         .particleCreateInfo = particleCreateInfo,
     };
