@@ -32,6 +32,7 @@ Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCrea
     Particle p = {
         .dim = particleCreateInfo->dim,
         .lifetime = particleCreateInfo->lifetime,
+        .color = particleCreateInfo->color,
     };
 
     Vector2 pos;
@@ -82,7 +83,8 @@ void drawParticleSystem(struct Context *context) {
  
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
-            DrawRectangle(p->pos.x, p->pos.y, p->dim.x, p->dim.y, WHITE);
+            DrawRectangle(p->pos.x, p->pos.y, p->dim.x, p->dim.y, p->color);
         }
     }
 }
+

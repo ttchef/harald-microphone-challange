@@ -8,12 +8,14 @@
 typedef struct ParticleCreateInfo {
     Vector2 dim;
     float lifetime;
+    Color color;
 } ParticleCreateInfo;
 
 typedef struct Particle {
     Vector2 pos;
     Vector2 dim;
     float lifetime;
+    Color color;
 } Particle;
 
 typedef struct EmitterCreateInfo {

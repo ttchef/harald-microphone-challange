@@ -101,13 +101,15 @@ void initGame(Context *context) {
     ParticleCreateInfo particleCreateInfo = {
         .lifetime = 100.0f,
         .dim = (Vector2){10.0f, 10.0f},
+        .color = RED,
     };
 
     EmitterCreateInfo emitterCreateInfo = {
-        .pos = data->player.pos,
+        .pos =  Vector2Add(data->player.hitbox, Vector2Subtract(data->player.hitboxOrigin, data->player.pos)),
+        //.pos = data->player.pos,
         .lifetime = 10.0f,
         .infinite = true,
-        .spawnRate = 5.0f,
+        .spawnRate = 10.0f,
         .gravity = -300.0f,
         .particleCreateInfo = particleCreateInfo,
     };
@@ -336,6 +338,9 @@ void updateGame(Context *context, float dt) {
     updateObstacles(context, dt);
     updateBackround(context, &game->bg, dt);
     updateParticleSystem(context);
+    game->particleSystem.emitters[0].pos = Vector2Subtract(game->player.hitbox, Vector2Subtract(game->player.hitboxOrigin, game->player.pos));
+    game->particleSystem.emitters[0].pos.x += game->player.hitboxOrigin.x;
+
 
     if (context->isMultiplayer) {
         updatePlayer(context, dt, PLAYER_2);
