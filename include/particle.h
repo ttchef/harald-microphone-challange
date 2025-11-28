@@ -11,24 +11,29 @@ typedef struct ParticleCreateInfo {
 } ParticleCreateInfo;
 
 typedef struct Particle {
-    bool isActive;
     Vector2 pos;
     Vector2 dim;
     float lifetime;
 } Particle;
 
 typedef struct EmitterCreateInfo {
+    bool infinite;
     Vector2 pos;
     float lifetime;
     float spawnRate;
+    float elaspedTime;
     float gravity;
     ParticleCreateInfo particleCreateInfo;
 } EmitterCreateInfo;
 
 typedef struct Emitter {
+    bool infinite;
     Vector2 pos;
     float lifetime;
     float spawnRate;
+    float elapsedTime;
+    float particleSpawnTime;
+    float gravity;
     ParticleCreateInfo particleCreateInfo;
     Particle* particles;
 } Emitter;

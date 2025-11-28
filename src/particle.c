@@ -18,9 +18,12 @@ void createParticleEmitter(struct Context* context, EmitterCreateInfo* emitterCr
         .pos = cr.pos,
         .lifetime = cr.lifetime,
         .spawnRate = cr.spawnRate,
+        .gravity = cr.gravity,
+        .infinite = cr.infinite,
         .particleCreateInfo = cr.particleCreateInfo,
     };
 
+    emitter.particleSpawnTime = 1 / cr.spawnRate;
     emitter.particles = darrayCreate(Particle);
     darrayPush(pr->emitters, emitter);
 }
@@ -43,24 +46,25 @@ void updateParticleSystem(struct Context *context) {
     ParticleSystem* pr = &context->gameData.particleSystem;
     for (int32_t i = 0; i < darrayLength(pr->emitters); i++) {
         Emitter* emitter = &pr->emitters[i];
+        emitter->elapsedTime += context->deltaTime;
  
         // Check if still active
-        if (emitter->lifetime <= 0.0f) {
+        if (!emitter->infinite && emitter->lifetime <= 0.0f) {
             darrayPopAt(pr->emitters, i, NULL);
         }
-        emitter->lifetime -= context->deltaTime;
+        if (!emitter->infinite) emitter->lifetime -= context->deltaTime;
 
-        uint64_t particleCount = darrayLength(emitter->particles);
-        if (particleCount < emitter->particleCreateInfo.lifetime * emitter->spawnRate) {
+        if (emitter->elapsedTime >= emitter->particleSpawnTime) {
             Particle tmp = createRandomParticle(emitter, &emitter->particleCreateInfo);
             darrayPush(emitter->particles, tmp);
+            emitter->elapsedTime = 0.0f;
         }
 
         // Update Particles
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
 
-            p->pos.y -= 30.0f * context->deltaTime;
+            p->pos.y += emitter->gravity * context->deltaTime;
 
             if (p->lifetime <= 0.0f) {
                 emitter->particles = darrayPopAt(emitter->particles, j, NULL);

@@ -8,6 +8,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include <stdint.h>
 #include <string.h>
 #include <stdatomic.h>
 
@@ -98,14 +99,16 @@ void initGame(Context *context) {
     initParticleSystem(context);
 
     ParticleCreateInfo particleCreateInfo = {
-        .lifetime = 2.0f,
+        .lifetime = 100.0f,
         .dim = (Vector2){10.0f, 10.0f},
     };
 
     EmitterCreateInfo emitterCreateInfo = {
         .pos = data->player.pos,
         .lifetime = 10.0f,
-        .spawnRate = 10.0f,
+        .infinite = true,
+        .spawnRate = 5.0f,
+        .gravity = -300.0f,
         .particleCreateInfo = particleCreateInfo,
     };
     createParticleEmitter(context, &emitterCreateInfo);
