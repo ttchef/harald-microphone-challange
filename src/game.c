@@ -61,7 +61,8 @@ static void initPlatforms(Context* context) {
 
         // Pusher 
         if (i % 3 == 0) {
-            addPusher(context, (Vector2){c->pos.x, c->pos.y - 20}, (Vector2){20, 20});
+            addPusher(context, (Vector2){c->pos.x, c->pos.y - 20}, (Vector2){20, 20},
+                      30.0f, -30.0f, 200.0f);
         }
 
         // Textures

@@ -10,27 +10,7 @@ void initParticleSystem(struct Context *context) {
     pr->emitters = darrayCreate(Emitter);
 }
 
-void createParticleEmitter(struct Context* context, EmitterCreateInfo* emitterCreateInfo) {
-    ParticleSystem* pr = &context->gameData.particleSystem;
-    EmitterCreateInfo cr = *emitterCreateInfo;
-
-    Emitter emitter = {
-        .pos = cr.pos,
-        .lifetime = cr.lifetime,
-        .spawnRate = cr.spawnRate,
-        .force = cr.force,
-        .infinite = cr.infinite,
-        .particleTexture = cr.particleTexture == NULL ? (Texture2D){0} : LoadTexture(cr.particleTexture),
-        .hasTexture = cr.particleTexture == NULL ? false : true,
-        .particleCreateInfo = cr.particleCreateInfo,
-    };
-
-    emitter.particleSpawnTime = 1 / cr.spawnRate;
-    emitter.particles = darrayCreate(Particle);
-    darrayPush(pr->emitters, emitter);
-}
-
-Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCreateInfo) {
+Particle createRandomParticle(struct Context* context, struct Emitter* emitter, ParticleCreateInfo* particleCreateInfo) {
     Particle p = {
         .dim = particleCreateInfo->dim,
         .lifetime = particleCreateInfo->lifetime,
@@ -48,6 +28,28 @@ Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCrea
     return p;
 }
 
+void createParticleEmitter(struct Context* context, EmitterCreateInfo* emitterCreateInfo) {
+    ParticleSystem* pr = &context->gameData.particleSystem;
+    EmitterCreateInfo cr = *emitterCreateInfo;
+
+    Emitter emitter = {
+        .pos = cr.pos,
+        .lifetime = cr.lifetime,
+        .spawnRate = cr.spawnRate,
+        .force = cr.force,
+        .infinite = cr.infinite,
+        .particleTexture = cr.particleTexture == NULL ? (Texture2D){0} : LoadTexture(cr.particleTexture),
+        .hasTexture = cr.particleTexture == NULL ? false : true,
+        .particleCreateInfo = cr.particleCreateInfo,
+        .spawnCallback = cr.spawnCallback == NULL ? createRandomParticle : cr.spawnCallback,
+        .userData = cr.userData,
+    };
+
+    emitter.particleSpawnTime = 1 / cr.spawnRate;
+    emitter.particles = darrayCreate(Particle);
+    darrayPush(pr->emitters, emitter);
+}
+
 void updateParticleSystem(struct Context *context) {
     ParticleSystem* pr = &context->gameData.particleSystem;
     for (int32_t i = 0; i < darrayLength(pr->emitters); i++) {
@@ -61,7 +63,7 @@ void updateParticleSystem(struct Context *context) {
         if (!emitter->infinite) emitter->lifetime -= context->deltaTime;
 
         if (emitter->elapsedTime >= emitter->particleSpawnTime) {
-            Particle tmp = createRandomParticle(emitter, &emitter->particleCreateInfo);
+            Particle tmp = emitter->spawnCallback(context, emitter, &emitter->particleCreateInfo);
             darrayPush(emitter->particles, tmp);
             emitter->elapsedTime = 0.0f;
         }

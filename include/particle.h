@@ -19,6 +19,10 @@ typedef struct Particle {
     Color color;
 } Particle;
 
+struct Context;
+struct Emitter;
+typedef Particle(*FN_particleSpawnCallback)(struct Context* context, struct Emitter*, ParticleCreateInfo*);
+
 typedef struct EmitterCreateInfo {
     bool infinite;
     Vector2 pos;
@@ -27,6 +31,8 @@ typedef struct EmitterCreateInfo {
     Vector2 force;
     const char* particleTexture;
     ParticleCreateInfo particleCreateInfo;
+    FN_particleSpawnCallback spawnCallback;
+    void* userData;
 } EmitterCreateInfo;
 
 typedef struct Emitter {
@@ -41,6 +47,8 @@ typedef struct Emitter {
     Texture2D particleTexture;
     ParticleCreateInfo particleCreateInfo;
     Particle* particles;
+    FN_particleSpawnCallback spawnCallback;
+    void* userData;
 } Emitter;
 
 typedef struct ParticleSystem {
