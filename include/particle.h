@@ -23,8 +23,7 @@ typedef struct EmitterCreateInfo {
     Vector2 pos;
     float lifetime;
     float spawnRate;
-    float elaspedTime;
-    float gravity;
+    Vector2 force;
     const char* particleTexture;
     ParticleCreateInfo particleCreateInfo;
 } EmitterCreateInfo;
@@ -32,11 +31,12 @@ typedef struct EmitterCreateInfo {
 typedef struct Emitter {
     bool infinite;
     Vector2 pos;
+    Vector2 force;
     float lifetime;
     float spawnRate;
     float elapsedTime;
     float particleSpawnTime;
-    float gravity;
+    bool hasTexture;
     Texture2D particleTexture;
     ParticleCreateInfo particleCreateInfo;
     Particle* particles;

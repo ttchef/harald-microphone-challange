@@ -86,6 +86,11 @@ void renderGame(Context *context) {
     // Colliders
     renderPlatforms(context);
 
+    // Pushers
+    for (int32_t i = 0; i < darrayLength(game->pushers); i++) {
+        renderPusher(context, &game->pushers[i]);
+    }
+
     renderPlayer(&game->player);
     if (context->isMultiplayer) {
         renderPlayer(&game->player2);

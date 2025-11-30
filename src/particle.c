@@ -18,9 +18,10 @@ void createParticleEmitter(struct Context* context, EmitterCreateInfo* emitterCr
         .pos = cr.pos,
         .lifetime = cr.lifetime,
         .spawnRate = cr.spawnRate,
-        .gravity = cr.gravity,
+        .force = cr.force,
         .infinite = cr.infinite,
-        .particleTexture = LoadTexture(cr.particleTexture),
+        .particleTexture = cr.particleTexture == NULL ? (Texture2D){0} : LoadTexture(cr.particleTexture),
+        .hasTexture = cr.particleTexture == NULL ? false : true,
         .particleCreateInfo = cr.particleCreateInfo,
     };
 
@@ -68,7 +69,8 @@ void updateParticleSystem(struct Context *context) {
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
 
-            p->pos.y += emitter->gravity * context->deltaTime;
+            p->pos.x += emitter->force.x * context->deltaTime;
+            p->pos.y += emitter->force.y * context->deltaTime;
 
             if (p->lifetime <= 0.0f) {
                 emitter->particles = darrayPopAt(emitter->particles, j, NULL);
@@ -99,7 +101,13 @@ void drawParticleSystem(struct Context *context) {
                 .height = p->dim.y
             };
             Color c = (Color){255, 255, 255, p->lifetime * 255};
-            DrawTexturePro(emitter->particleTexture, src, dest, (Vector2){0, 0}, 0.0f, c);
+            
+            if (emitter->hasTexture) {
+                DrawTexturePro(emitter->particleTexture, src, dest, (Vector2){0, 0}, 0.0f, c);
+            }
+            else {
+                DrawRectangle(p->pos.x, p->pos.y, p->dim.x, p->dim.y, c);
+            }
         }
     }
 }

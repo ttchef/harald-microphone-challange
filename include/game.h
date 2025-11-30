@@ -7,6 +7,7 @@
 #include <background.h>
 #include <particle.h>
 #include <light.h>
+#include <pusher.h>
 
 #include <stdint.h>
 #include <raylib.h>
@@ -86,6 +87,7 @@ typedef struct GameData {
     Rope rope;
     int32_t maxHeight;
     int32_t height;
+    Pusher* pushers;
     ParticleSystem particleSystem;
     LighSystem lightSystem;
 } GameData;

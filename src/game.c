@@ -59,6 +59,11 @@ static void initPlatforms(Context* context) {
         currentY -= GetRandomValue(90, 150);
         c->pos.y = currentY;
 
+        // Pusher 
+        if (i % 3 == 0) {
+            addPusher(context, (Vector2){c->pos.x, c->pos.y - 20}, (Vector2){20, 20});
+        }
+
         // Textures
         p->left = LoadTexture("res/erik/platform/left.png");
         p->right = LoadTexture("res/erik/platform/right.png");
@@ -93,9 +98,6 @@ void initGame(Context *context) {
     data->player2.texture = LoadTexture("res/StickmanPack-V0.2/StickmanPack/Full/Full.png");
     data->player2.accentColor = PINK;
 
-    createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
-    initPlatforms(context);
-
     initParticleSystem(context);
 
     ParticleCreateInfo particleCreateInfo = {
@@ -110,10 +112,15 @@ void initGame(Context *context) {
         .lifetime = 10.0f,
         .infinite = true,
         .spawnRate = 30.0f,
-        .gravity = -300.0f,
+        .force = (Vector2){0, -300.0f},
         .particleCreateInfo = particleCreateInfo,
     };
     createParticleEmitter(context, &emitterCreateInfo);
+
+    createRope(&data->rope, 50, (Vector2){context->windowWidth * 0.5f, context->windowHeight * 0.5f}, 5, 0.98f);
+    data->pushers = darrayCreate(Pusher);
+    initPlatforms(context);
+
 }
 
 static void spawnRandomObstacle(Context* context) {
