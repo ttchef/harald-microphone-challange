@@ -14,6 +14,7 @@ typedef struct ParticleCreateInfo {
 typedef struct Particle {
     Vector2 pos;
     Vector2 dim;
+    Vector2 vel;
     float lifetime;
     Color color;
 } Particle;

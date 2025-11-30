@@ -35,14 +35,15 @@ Particle createRandomParticle(Emitter* emitter, ParticleCreateInfo* particleCrea
         .dim = particleCreateInfo->dim,
         .lifetime = particleCreateInfo->lifetime,
         .color = particleCreateInfo->color,
+        .vel = emitter->force,
     };
 
-    Vector2 pos;
-    pos.x = GetRandomValue(emitter->pos.x + particleCreateInfo->dim.x / 2 - 30,
-                           emitter->pos.x + particleCreateInfo->dim.x / 2 + 30);
-    pos.y = GetRandomValue(emitter->pos.y + particleCreateInfo->dim.y / 2 - 30,
-                           emitter->pos.y + particleCreateInfo->dim.y + 30);
-    p.pos = pos;
+    Vector2 vel;
+    vel.x = GetRandomValue(0, 40) - 20;
+    vel.y = GetRandomValue(0, 40) - 20;
+    p.vel = Vector2Add(p.vel, vel);
+
+    p.pos = emitter->pos;
 
     return p;
 }
@@ -69,14 +70,13 @@ void updateParticleSystem(struct Context *context) {
         for (int32_t j = 0; j < darrayLength(emitter->particles); j++) {
             Particle* p = &emitter->particles[j];
 
-            p->pos.x += emitter->force.x * context->deltaTime;
-            p->pos.y += emitter->force.y * context->deltaTime;
+            p->pos.x += p->vel.x * context->deltaTime;
+            p->pos.y += p->vel.y * context->deltaTime;
 
             if (p->lifetime <= 0.0f) {
                 emitter->particles = darrayPopAt(emitter->particles, j, NULL);
             }
             p->lifetime -= context->deltaTime;
-     
         }
     }
 }
