@@ -42,6 +42,8 @@ void addPusher(Context* context, Vector2 pos, Vector2 hitbox, float coneAngle,
         .coneAngle = coneAngle,
         .distance = distance,
     };
+    float angle = (pusher.offsetAngle + pusher.coneAngle) * DEG2RAD;
+    pusher.pushVel = (Vector2){cosf(angle), sinf(angle)};
     darrayPush(game->pushers, pusher);
 
     ParticleCreateInfo particleCreateInfo = {
@@ -64,7 +66,18 @@ void addPusher(Context* context, Vector2 pos, Vector2 hitbox, float coneAngle,
     createParticleEmitter(context, &emitterCreateInfo);
 }
 
-void renderPusher(struct Context *context, Pusher *pusher) {
-    DrawRectangle(pusher->pos.x, pusher->pos.y, pusher->hitbox.x, pusher->hitbox.y, WHITE);
+void debugRenderPushersHitbox(struct Context *context) {
+    Pusher* pushers = context->gameData.pushers;
+    for (int32_t i = 0; i < darrayLength(pushers); i++) {
+        Pusher* pusher = &pushers[i];
+        DrawRectangleLines(pusher->pos.x, pusher->pos.y, pusher->hitbox.x, pusher->hitbox.y, GREEN);
+    }
 }
 
+void renderPushers(struct Context *context) {
+    Pusher* pushers = context->gameData.pushers;
+    for (int32_t i = 0; i < darrayLength(pushers); i++) {
+        Pusher* pusher = &pushers[i];
+        DrawRectangle(pusher->pos.x, pusher->pos.y, pusher->hitbox.x, pusher->hitbox.y, WHITE);
+    }
+}

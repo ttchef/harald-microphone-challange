@@ -11,6 +11,7 @@
 
 #include <raylib.h>
 #include "particle.h"
+#include "pusher.h"
 #include "raygui.h"
 
 static void debugRenderPlayerHitbox(Context* context, Player* p) {
@@ -87,9 +88,7 @@ void renderGame(Context *context) {
     renderPlatforms(context);
 
     // Pushers
-    for (int32_t i = 0; i < darrayLength(game->pushers); i++) {
-        renderPusher(context, &game->pushers[i]);
-    }
+    renderPushers(context);
 
     renderPlayer(&game->player);
     if (context->isMultiplayer) {
@@ -100,6 +99,7 @@ void renderGame(Context *context) {
     if (context->debugMode) {
         debugRenderPlayerHitbox(context, &game->player);
         debugRenderPlatformHitbox(context);
+        debugRenderPushersHitbox(context);
     }     
     if (context->debugMode && context->isMultiplayer)  debugRenderPlayerHitbox(context, &game->player2);
 }

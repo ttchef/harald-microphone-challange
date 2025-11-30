@@ -11,12 +11,14 @@ typedef struct Pusher {
     float coneAngle;
     float offsetAngle;
     float distance;
+    Vector2 pushVel;
     Texture2D tex;
 } Pusher;
 
 struct Context;
 void addPusher(struct Context* context, Vector2 pos, Vector2 hitbox,
                float coneAngle, float offsetAngle, float distance);
-void renderPusher(struct Context* context, Pusher* pusher);
+void debugRenderPushersHitbox(struct Context* context);
+void renderPushers(struct Context* context);
 
 #endif // PUSHER_H
