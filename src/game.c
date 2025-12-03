@@ -62,7 +62,7 @@ static void initPlatforms(Context* context) {
         // Pusher 
         if (i % 3 == 0) {
             addPusher(context, (Vector2){c->pos.x, c->pos.y - 20}, (Vector2){20, 20},
-                      90.0f, -45.0f, 200.0f);
+                      45.0f, 0.0f, 300.0f);
         }
 
         // Textures
@@ -241,9 +241,10 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     else if (p->vel.x < -500.0f) p->vel.x = -500.0f;
 
     p->acc.y = GAME_GRAVITY;
-    if (p->vel.x < 0) p->vel.x += GROUND_FRICTION;
-    else if (p->vel.x > 0) p->vel.x -= GROUND_FRICTION;
-
+    //if (p->vel.x < 0) p->vel.x += GROUND_FRICTION;
+    //else if (p->vel.x > 0) p->vel.x -= GROUND_FRICTION;
+    if (p->onGround) p->vel.x *= 0.9f;
+ 
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos.x += p->vel.x * dt;
 

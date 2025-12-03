@@ -80,9 +80,9 @@ void debugRenderPushersHitbox(struct Context *context) {
         float caRad = pushers->coneAngle * DEG2RAD;
         Vector2 endPos1 = Vector2Add(pushCenter, Vector2Scale((Vector2){cosf(oaRad), -sinf(oaRad)}, pusher->distance));
         Vector2 endPos2 = Vector2Add(pushCenter, Vector2Scale((Vector2){cosf(oaRad + caRad * 2), -sinf(oaRad + caRad * 2)}, pusher->distance));
-        DrawLineEx(pushCenter, endPos1, 3, RED);
-        DrawLineEx(pushCenter, endPos2, 3, RED);
-        DrawLineEx(endPos1, endPos2, 3, RED);
+        DrawLineEx(pushCenter, endPos1, 1, RED);
+        DrawLineEx(pushCenter, endPos2, 1, RED);
+        DrawLineEx(endPos1, endPos2, 1, RED);
     }
 }
 
