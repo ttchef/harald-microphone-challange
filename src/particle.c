@@ -102,7 +102,7 @@ void drawParticleSystem(struct Context *context) {
                 .width = p->dim.x,
                 .height = p->dim.y
             };
-            Color c = (Color){255, 255, 255, p->lifetime * 255};
+            Color c = (Color){255, 255, 255, Clamp(p->lifetime * 255, 0, 255)};
             
             if (emitter->hasTexture) {
                 DrawTexturePro(emitter->particleTexture, src, dest, (Vector2){0, 0}, 0.0f, c);

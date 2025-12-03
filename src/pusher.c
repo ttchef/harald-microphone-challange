@@ -22,9 +22,9 @@ Particle particleCallback(struct Context* context, struct Emitter* emitter, Part
     Vector2 dir = (Vector2){cosf(randomAngle), sinf(randomAngle)};
     dir = Vector2Scale(dir, pusher->distance * 0.5f);
 
-    Vector2 vel;
-    vel.x = GetRandomValue(-10, 10);
-    vel.y = GetRandomValue(-10, 10);
+    Vector2 vel = (Vector2){0};
+    //vel.x = GetRandomValue(-10, 10);
+    //vel.y = GetRandomValue(-10, 10);
     p.vel = Vector2Add(dir, vel);
 
     p.pos = emitter->pos;
@@ -70,7 +70,16 @@ void debugRenderPushersHitbox(struct Context *context) {
     Pusher* pushers = context->gameData.pushers;
     for (int32_t i = 0; i < darrayLength(pushers); i++) {
         Pusher* pusher = &pushers[i];
+        
+        // Block
         DrawRectangleLines(pusher->pos.x, pusher->pos.y, pusher->hitbox.x, pusher->hitbox.y, GREEN);
+
+        // Cone
+        Vector2 endPos1 = Vector2Add(Vector2Rotate((Vector2){pusher->distance, 0}, pusher->offsetAngle * DEG2RAD), pusher->pos);
+        Vector2 endPos2 = Vector2Add(Vector2Rotate((Vector2){pusher->distance, 0}, (pusher->offsetAngle + pusher->coneAngle * 2) * DEG2RAD), pusher->pos);
+        DrawLine(pusher->pos.x + pusher->hitbox.x / 2, pusher->pos.y + pusher->hitbox.y / 2, endPos1.x, endPos1.y, GREEN);
+        DrawLine(pusher->pos.x + pusher->hitbox.x / 2, pusher->pos.y + pusher->hitbox.y / 2, endPos2.x, endPos2.y, GREEN);
+        DrawLineEx(endPos1, endPos2, 1, GREEN);
     }
 }
 
