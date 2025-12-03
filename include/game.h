@@ -6,7 +6,6 @@
 #include <collider.h>
 #include <background.h>
 #include <particle.h>
-#include <light.h>
 #include <pusher.h>
 
 #include <stdint.h>
@@ -89,7 +88,6 @@ typedef struct GameData {
     int32_t height;
     Pusher* pushers;
     ParticleSystem particleSystem;
-    LighSystem lightSystem;
 } GameData;
 
 struct Context;

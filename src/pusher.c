@@ -18,8 +18,8 @@ Particle particleCallback(struct Context* context, struct Emitter* emitter, Part
     };
 
     // Dircetion Vector
-    float randomAngle = RandomFloat(pusher->offsetAngle - pusher->coneAngle, pusher->offsetAngle + pusher->coneAngle) * DEG2RAD;
-    Vector2 dir = (Vector2){cosf(randomAngle), sinf(randomAngle)};
+    float randomAngle = (RandomFloat(0, pusher->coneAngle * 2) + pusher->offsetAngle) * DEG2RAD;
+    Vector2 dir = (Vector2){cosf(randomAngle), -sinf(randomAngle)};
     dir = Vector2Scale(dir, pusher->distance * 0.5f);
 
     Vector2 vel = (Vector2){0};
@@ -39,7 +39,7 @@ void addPusher(Context* context, Vector2 pos, Vector2 hitbox, float coneAngle,
         .pos = pos,
         .hitbox = hitbox,
         .offsetAngle = offsetAngle,
-        .coneAngle = coneAngle,
+        .coneAngle = coneAngle / 2,
         .distance = distance,
     };
     float angle = (pusher.offsetAngle + pusher.coneAngle) * DEG2RAD;
@@ -47,7 +47,7 @@ void addPusher(Context* context, Vector2 pos, Vector2 hitbox, float coneAngle,
     darrayPush(game->pushers, pusher);
 
     ParticleCreateInfo particleCreateInfo = {
-        .lifetime = 0.7f,
+        .lifetime = 2.0f,
         .dim = (Vector2){10.0f, 10.0f},
         .color = RED,
     };
@@ -75,11 +75,14 @@ void debugRenderPushersHitbox(struct Context *context) {
         DrawRectangleLines(pusher->pos.x, pusher->pos.y, pusher->hitbox.x, pusher->hitbox.y, GREEN);
 
         // Cone
-        Vector2 endPos1 = Vector2Add(Vector2Rotate((Vector2){pusher->distance, 0}, pusher->offsetAngle * DEG2RAD), pusher->pos);
-        Vector2 endPos2 = Vector2Add(Vector2Rotate((Vector2){pusher->distance, 0}, (pusher->offsetAngle + pusher->coneAngle * 2) * DEG2RAD), pusher->pos);
-        DrawLine(pusher->pos.x + pusher->hitbox.x / 2, pusher->pos.y + pusher->hitbox.y / 2, endPos1.x, endPos1.y, GREEN);
-        DrawLine(pusher->pos.x + pusher->hitbox.x / 2, pusher->pos.y + pusher->hitbox.y / 2, endPos2.x, endPos2.y, GREEN);
-        DrawLineEx(endPos1, endPos2, 1, GREEN);
+        Vector2 pushCenter = (Vector2){pusher->pos.x + pusher->hitbox.x / 2, pusher->pos.y + pusher->hitbox.y / 2};
+        float oaRad = pusher->offsetAngle * DEG2RAD;
+        float caRad = pushers->coneAngle * DEG2RAD;
+        Vector2 endPos1 = Vector2Add(pushCenter, Vector2Scale((Vector2){cosf(oaRad), -sinf(oaRad)}, pusher->distance));
+        Vector2 endPos2 = Vector2Add(pushCenter, Vector2Scale((Vector2){cosf(oaRad + caRad * 2), -sinf(oaRad + caRad * 2)}, pusher->distance));
+        DrawLineEx(pushCenter, endPos1, 3, RED);
+        DrawLineEx(pushCenter, endPos2, 3, RED);
+        DrawLineEx(endPos1, endPos2, 3, RED);
     }
 }
 

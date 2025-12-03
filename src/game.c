@@ -62,7 +62,7 @@ static void initPlatforms(Context* context) {
         // Pusher 
         if (i % 3 == 0) {
             addPusher(context, (Vector2){c->pos.x, c->pos.y - 20}, (Vector2){20, 20},
-                      -10.0f, 0.0f, 200.0f);
+                      90.0f, -45.0f, 200.0f);
         }
 
         // Textures
@@ -102,7 +102,7 @@ void initGame(Context *context) {
     initParticleSystem(context);
 
     ParticleCreateInfo particleCreateInfo = {
-        .lifetime = 0.7f,
+        .lifetime = 1.2f,
         .dim = (Vector2){10.0f, 10.0f},
         .color = RED,
     };
