@@ -241,9 +241,14 @@ static void updatePlayer(Context *context, float dt, PlayerIdentifier playerId) 
     else if (p->vel.x < -500.0f) p->vel.x = -500.0f;
 
     p->acc.y = GAME_GRAVITY;
-    //if (p->vel.x < 0) p->vel.x += GROUND_FRICTION;
-    //else if (p->vel.x > 0) p->vel.x -= GROUND_FRICTION;
-    if (p->onGround) p->vel.x *= 0.9f;
+    if (p->vel.x < 0) {
+        p->vel.x += GROUND_FRICTION;
+        if (p->vel.x > 0) p->vel.x = 0;
+    }    
+    else if (p->vel.x > 0) {
+        p->vel.x -= GROUND_FRICTION;
+        if (p->vel.x < 0) p->vel.x = 0;
+    }
  
     p->vel = Vector2Add(p->vel, Vector2Scale(p->acc, dt));
     p->pos.x += p->vel.x * dt;
